@@ -1,639 +1,2128 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Uberpaket Cashless Recorder</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Pustaka Grafik -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .tab-active { color: #2563eb; background-color: #eff6ff; }
-        .loader { border-top-color: #2563eb; animation: spinner 1.5s linear infinite; }
-        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .modal-enter { animation: modal-bg-fade 0.3s ease-out; }
-        .modal-content-enter { animation: modal-content-pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
-        @keyframes modal-bg-fade { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes modal-content-pop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>BuddySpeak V.5.0 - Modern Kids Edition (Kelas 1-6 SD)</title>
+  <style>
+    /* =========================================================
+       1. SISTEM DESAIN MODERN "CANDY SOFT UI" UNTUK ANAK SD
+    ========================================================= */
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800;900&display=swap');
+
+    :root {
+      --ink: #2D3250;
+      --ink-soft: #6B7299;
+      --primary: #6C63FF;
+      --primary-2: #4FA3FF;
+      --grad-primary: linear-gradient(135deg, #6C63FF 0%, #4FA3FF 100%);
+      --grad-sun: linear-gradient(135deg, #FFC93D 0%, #FF9F45 100%);
+      --grad-mint: linear-gradient(135deg, #3DD9A4 0%, #2BB8DA 100%);
+      --grad-coral: linear-gradient(135deg, #FF7A85 0%, #FF9F6E 100%);
+      --grad-grape: linear-gradient(135deg, #B06CFF 0%, #FF6CC2 100%);
+      --card-bg: rgba(255,255,255,0.92);
+      --shadow-soft: 0 12px 30px rgba(76, 87, 180, 0.14);
+      --shadow-pop: 0 8px 22px rgba(108, 99, 255, 0.35);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: 'Nunito', sans-serif; color: var(--ink);
+      background: linear-gradient(160deg, #DCE7FF 0%, #F3ECFF 45%, #FFF0F3 100%);
+      overflow-x: hidden; touch-action: manipulation;
+    }
+
+    .app {
+      max-width: 480px; margin: 0 auto; min-height: 100vh; min-height: 100dvh;
+      position: relative; display: flex; flex-direction: column;
+      background: linear-gradient(180deg, #F4F7FF 0%, #FBF6FF 60%, #FFF7F2 100%);
+      box-shadow: 0 0 60px rgba(90,100,200,0.18);
+      overflow: hidden;
+    }
+
+    /* Dekorasi blob lembut di latar */
+    .app::before, .app::after {
+      content: ""; position: absolute; border-radius: 50%; filter: blur(60px); opacity: .5; pointer-events: none; z-index: 0;
+    }
+    .app::before { width: 320px; height: 320px; background: #C9D6FF; top: -120px; right: -120px; }
+    .app::after  { width: 300px; height: 300px; background: #FFD9E8; bottom: -140px; left: -120px; }
+
+    .screen { display: none; padding: 22px 20px 30px; min-height: 100vh; min-height: 100dvh; flex-direction: column; width: 100%; position: relative; overflow-y: auto; z-index: 1; }
+    .screen.active { display: flex; animation: screenIn .38s cubic-bezier(.22,1,.36,1); }
+    @keyframes screenIn { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+
+    h1, h2, h3, .title-large, .font-display { font-family: 'Fredoka', 'Nunito', sans-serif; }
+    .title-large { font-size: 30px; text-align: center; margin-bottom: 8px; font-weight: 700; color: var(--ink); letter-spacing: .3px; }
+    label { font-weight: 800; font-size: 14px; color: var(--ink-soft); display: block; margin-bottom: 6px; }
+
+    /* ------- TOMBOL ------- */
+    button { cursor: pointer; font-family: 'Nunito', sans-serif; border: none; border-radius: var(--radius-lg); transition: transform .12s ease, box-shadow .12s ease, filter .12s; font-weight: 900; color: var(--ink); }
+    button:active { transform: scale(0.96); }
+    button:disabled { opacity: 0.55; filter: grayscale(.6); cursor: not-allowed; }
+
+    .btn-primary {
+      min-height: 60px; font-size: 18px; width: 100%; margin-bottom: 12px;
+      background: var(--grad-primary); color: #fff; box-shadow: var(--shadow-pop);
+      letter-spacing: .3px;
+    }
+    .btn-primary.sun   { background: var(--grad-sun);   box-shadow: 0 8px 22px rgba(255,159,69,.35); color:#5C3A00; }
+    .btn-primary.mint  { background: var(--grad-mint);  box-shadow: 0 8px 22px rgba(43,184,218,.35); }
+    .btn-primary.coral { background: var(--grad-coral); box-shadow: 0 8px 22px rgba(255,122,133,.35); }
+
+    .btn-secondary {
+      min-height: 54px; font-size: 16px; width: 100%; margin-bottom: 12px;
+      background: #fff; color: var(--ink); box-shadow: var(--shadow-soft);
+      display: flex; justify-content: space-between; align-items: center; padding: 0 20px;
+      border: 2px solid #EEF0FB;
+    }
+    .btn-secondary:hover { border-color: #D9DDFF; }
+
+    .btn-back {
+      display: inline-flex; align-items: center; gap: 6px; background: #fff; color: var(--ink);
+      border-radius: 999px; padding: 10px 18px; font-weight: 900; font-size: 14px;
+      box-shadow: var(--shadow-soft); margin-bottom: 16px; width: auto; align-self: flex-start;
+      border: 2px solid #EEF0FB;
+    }
+
+    input, select {
+      font-family: 'Nunito', sans-serif; outline: none; border: 2px solid #E4E7F7; background: #fff;
+      box-shadow: 0 4px 14px rgba(90,100,200,.07); border-radius: var(--radius-md);
+      font-weight: 800; color: var(--ink); width: 100%; min-height: 56px; font-size: 16px; padding: 0 16px;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(108,99,255,.15); }
+    input::placeholder { color: #A9AECB; font-weight: 700; }
+
+    /* ------- KARTU ------- */
+    .soft-card {
+      background: var(--card-bg); backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,.8);
+      border-radius: var(--radius-xl); box-shadow: var(--shadow-soft);
+      padding: 22px; margin-bottom: 18px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+    }
+
+    /* ------- LOADING ------- */
+    .loading-container { display:flex; flex-direction:column; align-items:center; justify-content:center; flex-grow:1; padding: 20px; }
+    .loading-text-card { background:#fff; border-radius: 999px; padding: 12px 26px; font-weight: 900; font-size: 14px; color: var(--ink-soft); box-shadow: var(--shadow-soft); margin-top: 26px; letter-spacing: .5px; }
+    .soft-loader-track { width: 220px; height: 12px; background: #E8EBFA; border-radius: 999px; margin-top: 18px; overflow: hidden; }
+    .soft-loader-fill { height: 100%; width: 40%; border-radius: 999px; background: var(--grad-primary); animation: loaderSlide 1.2s infinite ease-in-out; }
+    @keyframes loaderSlide { 0% { transform: translateX(-120%); } 100% { transform: translateX(320%); } }
+
+    /* ------- HEADER DASHBOARD ------- */
+    .dash-header { display:flex; justify-content:space-between; align-items:center; margin-bottom: 18px; }
+    .avatar-ring {
+      width: 56px; height: 56px; border-radius: 20px; padding: 3px;
+      background: var(--grad-primary); box-shadow: var(--shadow-pop); flex-shrink: 0;
+    }
+    .avatar-inner { width: 100%; height: 100%; border-radius: 17px; background: #fff; display:flex; align-items:center; justify-content:center; font-size: 28px; overflow: hidden; }
+    .level-chip { font-size: 11px; font-weight: 900; background: var(--grad-sun); color: #5C3A00; padding: 3px 10px; border-radius: 999px; display: inline-block; margin-top: 3px; box-shadow: 0 3px 8px rgba(255,159,69,.35); }
+
+    .star-banner {
+      background: var(--grad-sun); border-radius: var(--radius-xl);
+      box-shadow: 0 12px 28px rgba(255,169,64,.35);
+      padding: 22px; text-align: center; color: #5C3A00; margin-bottom: 18px; position: relative; overflow: hidden;
+    }
+    .star-banner::after { content: "✦"; position: absolute; font-size: 120px; opacity: .15; right: -10px; top: -30px; }
+    .star-banner h3 { font-size: 40px; }
+    .star-banner p { font-size: 11px; font-weight: 900; text-transform: uppercase; margin-top: 4px; letter-spacing: 1px; }
+
+    /* ------- PEMILIH KELAS ------- */
+    .level-h-scroll { display: flex; gap: 10px; overflow-x: auto; padding: 4px 2px 14px; scrollbar-width: none; }
+    .level-h-scroll::-webkit-scrollbar { display: none; }
+    .level-h-card {
+      flex-shrink: 0; padding: 12px 18px; border-radius: 999px; background: #fff; color: var(--ink-soft);
+      font-weight: 900; font-size: 14px; box-shadow: var(--shadow-soft); cursor: pointer; border: 2px solid #EEF0FB;
+      transition: all .15s;
+    }
+    .level-h-card.active { background: var(--grad-primary); color: #fff; border-color: transparent; box-shadow: var(--shadow-pop); transform: scale(1.05); }
+
+    /* ------- GRID MENU UTAMA ------- */
+    .main-menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 4px; }
+    .main-menu-card {
+      border-radius: var(--radius-xl); padding: 20px 14px; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 10px; text-align: center; cursor: pointer;
+      color: #fff; box-shadow: var(--shadow-soft); position: relative; overflow: hidden;
+      transition: transform .15s ease;
+    }
+    .main-menu-card:active { transform: scale(.96); }
+    .main-menu-card::before { content:""; position:absolute; width: 120px; height:120px; background: rgba(255,255,255,.18); border-radius: 50%; top: -50px; right: -40px; }
+    .main-menu-card h3 { font-size: 15px; font-weight: 700; letter-spacing: .3px; text-shadow: 0 2px 6px rgba(0,0,0,.12); }
+    .main-menu-card .mm-icon { font-size: 46px; filter: drop-shadow(0 4px 8px rgba(0,0,0,.15)); }
+    .mm-grape { background: var(--grad-grape); }
+    .mm-blue  { background: var(--grad-primary); }
+    .mm-sun   { background: var(--grad-sun); color: #5C3A00; }
+    .mm-sun h3 { text-shadow: none; }
+    .mm-mint  { background: var(--grad-mint); }
+    .mm-coral { background: var(--grad-coral); }
+
+    /* ------- TABS PIL ------- */
+    .pill-tabs { display: flex; background: #EDF0FC; border-radius: 999px; padding: 5px; gap: 5px; margin-bottom: 18px; width: 100%; }
+    .pill-tab { flex: 1; text-align: center; padding: 12px 8px; border-radius: 999px; font-weight: 900; font-size: 14px; color: var(--ink-soft); cursor: pointer; transition: all .18s; }
+    .pill-tab.active { background: #fff; color: var(--primary); box-shadow: 0 4px 12px rgba(90,100,200,.15); }
+
+    /* ------- GRID ABJAD ------- */
+    .ah-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .ah-card {
+      background: #fff; border-radius: var(--radius-lg); box-shadow: var(--shadow-soft);
+      padding: 14px 8px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; cursor: pointer; min-height: 118px; border: 2px solid transparent; transition: transform .12s;
+    }
+    .ah-card:active { transform: scale(.94); }
+    .ah-text { font-family: 'Fredoka'; font-weight: 700; line-height: 1.1; }
+    .ah-phonics { font-size: 11px; font-weight: 900; color: var(--primary); margin-top: 4px; background: #EFEEFF; border-radius: 999px; padding: 2px 10px; }
+    .ah-writing { font-size: 11px; color: var(--ink-soft); }
+
+    /* ------- LIST MODUL ------- */
+    .module-list { display: flex; flex-direction: column; gap: 12px; margin-top: 6px; }
+    .module-item {
+      background: #fff; border-radius: var(--radius-lg); box-shadow: var(--shadow-soft);
+      display: flex; align-items: center; padding: 14px 16px; cursor: pointer; border: 2px solid #F0F2FC;
+      transition: transform .13s;
+    }
+    .module-item:active { transform: scale(.97); }
+    .module-item-icon { width: 56px; height: 56px; border-radius: 18px; display: flex; align-items: center; justify-content: center; margin-right: 14px; flex-shrink: 0; font-size: 32px; }
+    .module-item-info { flex-grow: 1; }
+    .module-item-info h3 { font-size: 17px; font-weight: 700; }
+    .module-item-info p { font-size: 12.5px; font-weight: 700; color: var(--ink-soft); margin-top: 2px; }
+    .module-status-badge {
+      width: 44px; height: 44px; border-radius: 999px; display: flex; align-items: center; justify-content: center;
+      background: var(--grad-primary); color: #fff; font-size: 17px; box-shadow: var(--shadow-pop); flex-shrink: 0;
+    }
+
+    /* ------- KAMUS ------- */
+    .dict-list { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; padding-bottom: 30px; }
+    .dict-item { background: #fff; border-radius: var(--radius-lg); box-shadow: var(--shadow-soft); padding: 14px 16px; border: 2px solid #F0F2FC; }
+    .dict-icon { font-size: 34px; width: 56px; height: 56px; background: #F2F4FF; border-radius: 16px; display:flex; align-items:center; justify-content:center; margin-right: 14px; flex-shrink: 0; }
+    .dict-content { flex-grow: 1; text-align: left; }
+    .dict-en { font-family: 'Fredoka'; font-size: 18px; font-weight: 700; color: var(--ink); }
+    .dict-id { font-size: 14px; font-weight: 800; color: var(--ink-soft); }
+    .dict-play { width: 46px; height: 46px; border-radius: 999px; background: var(--grad-mint); color:#fff; font-size: 18px; box-shadow: 0 6px 14px rgba(43,184,218,.35); flex-shrink: 0; }
+
+    /* ------- MODUL GAMEPLAY ------- */
+    .flashcard {
+      width: 100%; border-radius: var(--radius-xl); box-shadow: var(--shadow-soft);
+      padding: 26px 20px; display: flex; flex-direction: column; align-items: center; text-align: center;
+      border: 1px solid rgba(255,255,255,.85);
+    }
+    .btn-mic { min-height: 54px; font-size: 15px; border-radius: var(--radius-md); display:flex; align-items:center; gap:6px; color:#fff; font-weight: 900; }
+    .progress-bar-small { width: 100%; height: 12px; background: #E8EBFA; border-radius: 999px; overflow: hidden; margin-top: 10px; }
+    .progress-fill { height: 100%; width: 0%; background: var(--grad-mint); border-radius: 999px; transition: width .4s ease; }
+
+    .scramble-header-card { background: #fff; border-radius: var(--radius-lg); box-shadow: var(--shadow-soft); padding: 14px; text-align: center; margin-bottom: 14px; width: 100%; }
+    .scramble-header-card h2 { font-size: 20px; }
+    .scramble-target-card { background: var(--grad-grape); color: #fff; border-radius: var(--radius-lg); padding: 16px; font-weight: 900; font-size: 17px; text-align: center; width: 100%; margin-bottom: 14px; box-shadow: 0 8px 20px rgba(176,108,255,.35); }
+    .scramble-drop-zone { min-height: 76px; background: #fff; border: 2.5px dashed #C6CBEF; border-radius: var(--radius-lg); width: 100%; padding: 12px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; margin-bottom: 16px; }
+    .scramble-btn-item { background: #fff; border-radius: 999px; box-shadow: var(--shadow-soft); border: 2px solid #E8EBFA; font-weight: 900; cursor: pointer; color: var(--ink); }
+    .scramble-drop-zone .scramble-btn-item { background: var(--grad-primary); color: #fff; border-color: transparent; }
+
+    .story-main-card { background: #fff; border-radius: var(--radius-xl); box-shadow: var(--shadow-soft); padding: 20px; width: 100%; margin-bottom: 16px; cursor: pointer; text-align: left; }
+    .story-en-text { font-weight: 800; line-height: 1.5; color: var(--ink); margin-bottom: 10px; }
+    .story-id-text { font-weight: 700; font-size: 13.5px; color: var(--ink-soft); font-style: italic; border-top: 2px dashed #E8EBFA; padding-top: 10px; margin-bottom: 8px; line-height: 1.5; }
+    .quiz-question-text { background: #fff; border-radius: var(--radius-lg); box-shadow: var(--shadow-soft); padding: 18px; font-weight: 900; font-size: 17px; width: 100%; margin-bottom: 16px; text-align: center; }
+
+    /* ------- MINI GAMES ------- */
+    .game-stats-row { display:flex; gap: 10px; margin-top: 14px; }
+    .stat-pill { flex: 1; background: #fff; border-radius: 999px; box-shadow: var(--shadow-soft); padding: 10px; text-align:center; font-weight: 900; font-size: 16px; }
+    .catch-container { position: relative; width: 100%; height: 420px; background: linear-gradient(180deg,#E8F4FF,#F6FBFF); border-radius: var(--radius-xl); overflow: hidden; box-shadow: inset 0 4px 14px rgba(90,100,200,.08); border: 2px solid #E4ECFB; }
+    .catch-basket { position: absolute; bottom: 8px; font-size: 52px; transform: translateX(-50%); transition: left .06s linear; filter: drop-shadow(0 6px 8px rgba(0,0,0,.15)); }
+    .falling-item { position: absolute; top: 0; font-size: 40px; transform: translateX(-50%); filter: drop-shadow(0 4px 6px rgba(0,0,0,.12)); }
+
+    /* ------- MASCOT GRID ------- */
+    .mascot-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-top: 8px; }
+    .mascot-item { font-size: 30px; background: #fff; border-radius: 16px; box-shadow: var(--shadow-soft); padding: 10px 0; text-align: center; cursor: pointer; border: 3px solid transparent; transition: all .15s; }
+    .mascot-item.selected { border-color: var(--primary); background: #EFEEFF; transform: scale(1.08); }
+
+    /* ------- INTRO ------- */
+    .intro-step { display: none; flex-direction: column; align-items: center; }
+    .intro-step.active-step { display: flex; animation: screenIn .35s ease; }
+    .intro-dot { width: 10px; height: 10px; border-radius: 999px; background: #D5D9F2; transition: all .2s; }
+    .intro-dot.active { width: 28px; background: var(--grad-primary); }
+
+    /* ------- MODAL ------- */
+    #custom-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(45,50,80,0.55); backdrop-filter: blur(6px); z-index:20000; align-items:center; justify-content:center; padding:24px; }
+    #custom-modal .soft-card { width: 100%; max-width: 380px; animation: popIn .3s cubic-bezier(.34,1.56,.64,1); }
+    @keyframes popIn { from { transform: scale(.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+    /* ------- ANIMASI ------- */
+    @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+    .anim-bounce { animation: bounce 2s infinite ease-in-out; }
+    @keyframes floaty { 0%,100%{transform:translateY(0) rotate(-2deg)} 50%{transform:translateY(-8px) rotate(2deg)} }
+    .anim-float { animation: floaty 3s infinite ease-in-out; }
+    @keyframes wobble { 0%,100%{transform:rotate(-8deg)} 50%{transform:rotate(8deg)} }
+    .anim-wobble { animation: wobble 2.5s infinite ease-in-out; }
+    @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.12)} }
+    .anim-pulse { animation: pulse 1.5s infinite ease-in-out; }
+
+    /* Konfeti sederhana saat menang */
+    .confetti-piece { position: fixed; top: -20px; font-size: 22px; z-index: 25000; pointer-events: none; animation: confettiFall linear forwards; }
+    @keyframes confettiFall { to { transform: translateY(110vh) rotate(720deg); opacity: .2; } }
+  </style>
 </head>
-<body class="bg-[#F8FAFC] min-h-screen">
+<body>
 
-    <nav class="bg-white border-b border-gray-100 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 items-center">
-                <div class="flex items-center gap-2">
-                    <div class="bg-blue-600 p-2 rounded-lg text-white">
-                        <i data-lucide="package" class="w-6 h-6"></i>
-                    </div>
-                    <span class="text-xl font-bold text-gray-800">Uberpaket<span class="text-blue-600">Cashless</span></span>
-                </div>
-                <div id="nav-actions"></div>
-            </div>
+<div id="app" class="app">
+
+  <!-- ================= SPLASH SCREEN ================= -->
+  <div id="screen-splash" class="screen active" style="justify-content: center;">
+      <div class="loading-container">
+          <div class="anim-bounce" style="width:130px; height:130px; border-radius:38px; background:var(--grad-primary); box-shadow:var(--shadow-pop); display:flex; align-items:center; justify-content:center;">
+              <img src="https://ik.imagekit.io/easylanguage/Easy%20Kit%20Buddy%20Speak/logo%20baru/EL%20KIDS%20(4).png" style="width:90px;" alt="Logo" onerror="this.outerHTML='<span style=&quot;font-size:64px;&quot;>🦊</span>'">
+          </div>
+          <h1 class="title-large" style="margin-top:22px;">BuddySpeak</h1>
+          <p style="font-weight:800; font-size:15px; color:var(--ink-soft); text-align:center;">Belajar Bahasa Inggris Seru<br>untuk Kelas 1–6 SD 🎒</p>
+          <button id="btn-start-app" class="btn-primary" style="margin-top:30px; font-size:20px; min-height:66px; max-width:320px;">MULAI SEKARANG 🚀</button>
+          <p style="font-size:12px; font-weight:800; color:var(--ink-soft); margin-top:12px; text-align:center;">*Aplikasi akan meminta izin mikrofon<br>untuk fitur latihan bicara.</p>
+      </div>
+  </div>
+
+  <!-- ================= LOADING SCREEN ================= -->
+  <div id="screen-loading" class="screen">
+      <div class="loading-container">
+          <div class="anim-bounce" style="width:110px; height:110px; border-radius:34px; background:var(--grad-primary); box-shadow:var(--shadow-pop); display:flex; align-items:center; justify-content:center;">
+              <img src="https://ik.imagekit.io/easylanguage/Easy%20Kit%20Buddy%20Speak/logo%20baru/EL%20KIDS%20(4).png" style="width:76px;" alt="Logo" onerror="this.outerHTML='<span style=&quot;font-size:54px;&quot;>🦊</span>'">
+          </div>
+          <div class="loading-text-card" id="loading-txt-display">MEMERIKSA SISTEM... 🔍</div>
+          <div class="soft-loader-track"><div class="soft-loader-fill"></div></div>
+      </div>
+  </div>
+
+  <!-- ================= AUTH SCREEN ================= -->
+  <div id="screen-auth" class="screen" style="justify-content: center;">
+      <div class="soft-card" style="padding: 34px 24px;">
+          <div style="width:96px; height:96px; border-radius:30px; background:var(--grad-sun); box-shadow:0 8px 22px rgba(255,159,69,.35); display:flex; align-items:center; justify-content:center; margin-bottom:18px;">
+              <img src="https://ik.imagekit.io/easylanguage/Easy%20Kit%20Buddy%20Speak/logo%20baru/EL%20KIDS%20(4).png" style="width:66px;" alt="Logo" onerror="this.outerHTML='<span style=&quot;font-size:48px;&quot;>🦊</span>'">
+          </div>
+          <h1 class="title-large">Masuk Akun</h1>
+          <p style="font-weight:800; margin-bottom:20px; color:var(--ink-soft); font-size:14px;">Halo Ayah & Bunda, silakan masuk ke akun BuddySpeak.</p>
+          <input type="email" id="input-email" placeholder="Email Orang Tua" style="text-align: center; margin-bottom: 12px;">
+          <input type="password" id="input-password" placeholder="Kata Sandi" style="text-align: center; margin-bottom: 16px;">
+          <button id="btn-login-exec" class="btn-primary">MASUK SEKARANG 🚀</button>
+          <button id="btn-register-exec" class="btn-secondary" style="justify-content:center;">DAFTAR BARU ✨</button>
+      </div>
+  </div>
+
+  <!-- ================= INTRO ONBOARDING ================= -->
+  <div id="screen-intro" class="screen" style="justify-content: center;">
+      <div class="soft-card" style="flex-grow:1; justify-content:center; margin-bottom:0;">
+          <div id="intro-step-1" class="intro-step active-step">
+              <div class="anim-bounce" style="width:120px; height:120px; border-radius:36px; background:var(--grad-primary); box-shadow:var(--shadow-pop); display:flex; align-items:center; justify-content:center; margin-bottom:20px;">
+                  <img src="https://ik.imagekit.io/easylanguage/Easy%20Kit%20Buddy%20Speak/logo%20baru/EL%20KIDS%20(4).png" style="width:82px;" alt="Logo" onerror="this.outerHTML='<span style=&quot;font-size:58px;&quot;>🦊</span>'">
+              </div>
+              <h2 class="title-large">BuddySpeak</h2>
+              <p style="font-weight:800; font-size:16px; color:var(--ink-soft);">Belajar Bahasa Inggris seru<br>khusus anak SD Kelas 1–6!</p>
+          </div>
+          <div id="intro-step-2" class="intro-step">
+              <div style="font-size:78px; margin-bottom:18px;" class="anim-bounce">🎤</div>
+              <h2 class="title-large">Latih Suara</h2>
+              <p style="font-weight:800; font-size:16px; color:var(--ink-soft);">Bicara seperti logat Cambridge<br>dengan AI cerdas Buddy.</p>
+          </div>
+          <div id="intro-step-3" class="intro-step">
+              <div style="font-size:78px; margin-bottom:18px;" class="anim-bounce">🏆</div>
+              <h2 class="title-large">Raih Bintang</h2>
+              <p style="font-weight:800; font-size:16px; color:var(--ink-soft);">Selesaikan misi, mainkan game,<br>dan jadilah juara kelas!</p>
+          </div>
+          <div style="display: flex; gap: 8px; margin-top: 28px;">
+              <div class="intro-dot active" id="dot-1"></div>
+              <div class="intro-dot" id="dot-2"></div>
+              <div class="intro-dot" id="dot-3"></div>
+          </div>
+      </div>
+      <div style="margin-top:18px; display:flex; flex-direction:column; gap:8px;">
+          <button id="btn-intro-next" class="btn-primary">LANJUTKAN →</button>
+          <button id="btn-intro-skip" class="btn-secondary" style="justify-content:center;">LEWATI</button>
+      </div>
+  </div>
+
+  <!-- ================= PERMISSION SCREEN ================= -->
+  <div id="screen-permission" class="screen" style="justify-content: center;">
+      <div class="soft-card" style="padding: 40px 24px;">
+          <div style="font-size: 66px; margin-bottom:14px;" class="anim-bounce">🎤🖼️</div>
+          <h2 class="title-large" style="font-size: 26px;">Izin Perangkat</h2>
+          <p style="font-weight: 800; font-size: 15px; margin-bottom: 26px; color: var(--ink-soft);">Buddy butuh akses Mikrofon untuk melatih suaramu, dan Penyimpanan untuk menyimpan progres belajarmu.</p>
+          <button id="btn-grant-permission" class="btn-primary mint">BERIKAN IZIN SEKARANG ✅</button>
+      </div>
+  </div>
+
+  <!-- ================= PROFILE SETUP / EDIT ================= -->
+  <div id="screen-profile-setup" class="screen">
+      <button id="btn-back-profile" class="btn-back" style="display:none;">← Kembali</button>
+
+      <div class="avatar-ring" style="width:104px; height:104px; border-radius:32px; margin:14px auto;">
+          <div class="avatar-inner" style="border-radius:28px; font-size:52px;" id="setup-mascot-preview">🦊</div>
+      </div>
+
+      <h1 class="title-large" id="profile-screen-title">Atur Profilmu</h1>
+      <div class="soft-card" style="align-items: stretch; text-align:left;">
+          <label>Unggah Foto Profil (Opsional):</label>
+          <input type="file" id="setup-photo" accept="image/*" style="font-size:14px; padding:14px; border:2px dashed #C6CBEF; cursor:pointer; background:#F8F9FF; margin-bottom:15px; height:auto; min-height:auto;">
+
+          <label>Siapa namamu?</label>
+          <input type="text" id="setup-name" placeholder="Nama Panggilan">
+
+          <label style="margin-top:15px;">Kamu kelas berapa?</label>
+          <select id="setup-level">
+              <option value="2">Kelas 1 SD</option>
+              <option value="3">Kelas 2 SD</option>
+              <option value="4">Kelas 3 SD</option>
+              <option value="5">Kelas 4 SD</option>
+              <option value="6">Kelas 5 SD</option>
+              <option value="7">Kelas 6 SD</option>
+          </select>
+
+          <label style="margin-top:15px;">Domisili (Kota/Kabupaten):</label>
+          <input type="text" id="setup-domicile" placeholder="Contoh: Malang">
+
+          <label style="margin-top:15px;">No Telfon Wali/Orangtua:</label>
+          <input type="tel" id="setup-phone" placeholder="Contoh: 081234567890">
+
+          <label style="margin-top:15px;">Asal Sekolah:</label>
+          <input type="text" id="setup-school" placeholder="Contoh: SDN 1 Malang">
+
+          <label style="margin-top:15px;">Alamat Lengkap:</label>
+          <input type="text" id="setup-address" placeholder="Contoh: Jl. Mawar No. 10">
+
+          <label style="margin-top:15px;">Atau Pilih Maskot:</label>
+          <div id="setup-mascot-grid" class="mascot-grid"></div>
+      </div>
+      <button id="btn-save-profile" class="btn-primary" disabled>SIMPAN PROFIL! ✨</button>
+      <button id="btn-logout" class="btn-secondary" style="background:#FFE9EB; color:#C62838; justify-content:center; margin-top:14px; border-color:#FFD3D8; display:none;">KELUAR AKUN (LOGOUT) 🚪</button>
+  </div>
+
+  <!-- ================= MAIN MENU ================= -->
+  <div id="screen-main-menu" class="screen">
+    <div class="dash-header">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div class="avatar-ring"><div class="avatar-inner" id="main-mascot-box">🦊</div></div>
+        <div>
+          <h2 id="main-menu-name" style="font-size:17px; margin:0;">HAI, TEMAN!</h2>
+          <div class="level-chip">KELAS <span id="cur-lvl-num">1</span> SD</div>
         </div>
-    </nav>
-
-    <main id="app-content" class="pb-20"></main>
-
-    <footer class="py-12 border-t border-gray-100 text-center text-gray-400 text-xs">
-        <p>© 2024 Uberpaket Cashless Rekap System • Powered by Supabase</p>
-    </footer>
-
-    <!-- Overlay Loader -->
-    <div id="global-loader" class="fixed inset-0 bg-white/80 z-[100] flex flex-col items-center justify-center hidden">
-        <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mb-4"></div>
-        <p class="text-blue-600 font-bold" id="loader-text">Memproses...</p>
+      </div>
+      <button id="btn-open-edit" style="background:#fff; padding:12px 16px; font-size:16px; border-radius:999px; box-shadow: var(--shadow-soft); border:2px solid #EEF0FB;">⚙️</button>
     </div>
 
-    <!-- Modal Pesan/Alert Kustom -->
-    <div id="msg-modal" class="fixed inset-0 bg-black/50 z-[120] flex items-center justify-center hidden modal-enter">
-        <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-xs text-center border modal-content-enter">
-            <div id="msg-icon-area" class="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4"></div>
-            <h3 id="msg-title" class="font-bold text-gray-800 mb-2">Pesan</h3>
-            <p id="msg-text" class="text-sm text-gray-500 mb-6"></p>
-            <button onclick="closeMsgModal()" class="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-bold transition-colors">Tutup</button>
-        </div>
+    <div class="star-banner">
+      <h3>⭐ <span id="main-menu-points">0</span></h3>
+      <p>Total Bintangmu</p>
     </div>
 
-    <!-- Modal PIN Owner -->
-    <div id="pin-modal" class="fixed inset-0 bg-black/50 z-[110] flex items-center justify-center hidden modal-enter">
-        <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-xs text-center border modal-content-enter">
-            <i data-lucide="key-round" class="text-amber-600 w-10 h-10 mx-auto mb-4"></i>
-            <h3 class="font-bold text-gray-800 mb-2">PIN Owner Dibutuhkan</h3>
-            <input type="password" id="pin-input" maxlength="6" placeholder="••••••" class="w-full text-center text-2xl font-bold p-3 border rounded-xl mb-4 bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none">
-            <div class="flex gap-2">
-                <button onclick="togglePinModal(false)" class="flex-1 py-2 text-gray-500 font-bold">Batal</button>
-                <button onclick="verifyOwnerPin()" class="flex-1 py-2 bg-blue-600 text-white rounded-xl font-bold">Buka</button>
-            </div>
-        </div>
+    <h3 style="font-size:15px; font-weight:700; margin-bottom:10px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.5px;">Materi Per Kelas:</h3>
+    <div class="level-h-scroll" id="main-level-selector"></div>
+
+    <div class="main-menu-grid">
+      <div class="main-menu-card mm-blue" id="btn-menu-ah">
+        <div class="mm-icon anim-float">🔤</div>
+        <h3>ABJAD & HURUF</h3>
+      </div>
+      <div class="main-menu-card mm-grape" id="btn-menu-misi">
+        <div class="mm-icon anim-bounce">📚</div>
+        <h3>MISI BELAJAR</h3>
+      </div>
+      <div class="main-menu-card mm-sun" id="btn-menu-kamus">
+        <div class="mm-icon anim-pulse">📖</div>
+        <h3>KAMUS PINTAR</h3>
+      </div>
+      <div class="main-menu-card mm-mint" id="btn-menu-games">
+        <div class="mm-icon anim-wobble">🎮</div>
+        <h3>ZONA BERMAIN</h3>
+      </div>
+      <div class="main-menu-card mm-coral" id="btn-menu-chat" style="grid-column: span 2;">
+        <div class="mm-icon anim-float">💬</div>
+        <h3>NGOBROL SAMA BUDDY</h3>
+      </div>
     </div>
+  </div>
 
-    <!-- Modal Konfirmasi Hapus -->
-    <div id="confirm-modal" class="fixed inset-0 bg-black/50 z-[110] flex items-center justify-center hidden modal-enter">
-        <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-sm text-center border modal-content-enter">
-            <div class="bg-red-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-                <i data-lucide="trash-2" class="text-red-600 w-8 h-8"></i>
-            </div>
-            <h3 id="confirm-title" class="font-black text-gray-900 text-xl mb-2">Konfirmasi Hapus</h3>
-            <p id="confirm-text" class="text-sm text-gray-500 mb-8 px-4"></p>
-            <div class="flex gap-3">
-                <button onclick="toggleConfirmModal(false)" class="flex-1 py-3 text-gray-500 font-bold hover:bg-gray-50 rounded-xl transition-colors">Batal</button>
-                <button id="confirm-execute-btn" class="flex-1 py-3 bg-red-600 text-white rounded-xl font-bold shadow-lg shadow-red-100 hover:bg-red-700 transition-all">Ya, Hapus</button>
-            </div>
-        </div>
+  <!-- ================= ABJAD & HURUF ================= -->
+  <div id="screen-ah" class="screen">
+      <button id="btn-back-ah" class="btn-back">← Menu Utama</button>
+      <div class="pill-tabs">
+          <div class="pill-tab active" id="tab-huruf">Abjad 🔤</div>
+          <div class="pill-tab" id="tab-angka">Angka 🔢</div>
+      </div>
+      <div style="flex-grow:1; overflow-y:auto; padding-bottom:20px;">
+          <div class="ah-grid" id="ah-container"></div>
+      </div>
+  </div>
+
+  <!-- ================= DASHBOARD MISI ================= -->
+  <div id="screen-dashboard" class="screen" style="padding-bottom: 40px;">
+      <button id="btn-back-dash" class="btn-back">← Menu Utama</button>
+
+      <div class="soft-card" style="flex-direction:row; justify-content:space-between; text-align:left; padding:18px 20px;">
+          <div>
+              <h2 style="font-size:22px; font-weight:700; margin:0;">KELAS <span id="misi-lvl-val">1</span> SD 🦊</h2>
+              <div style="background:#EFEEFF; color:var(--primary); border-radius:999px; padding:4px 12px; display:inline-block; font-weight:900; font-size:12px; margin-top:8px;" id="misi-grade-val">Semangat Belajar ⭐</div>
+          </div>
+          <div style="text-align:right;">
+              <div style="font-size:24px; font-weight:900; color:#F5900C;">⭐ <span id="misi-points-val">0</span></div>
+              <div style="font-size:13px; font-weight:900; color:#FF6B4A; margin-top:5px;">🔥 6 hari</div>
+          </div>
+      </div>
+
+      <div class="soft-card" style="background:var(--grad-primary); color:#fff; text-align:left; align-items:flex-start; box-shadow:var(--shadow-pop);">
+          <div style="font-weight:900; font-size:12px; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px; opacity:.85;">BUDDY SAYS:</div>
+          <div style="font-weight:800; font-size:15px; line-height:1.5;" id="buddy-message">Halo teman yang hebat, ayo semangat belajar hari ini! 🌟📚✨</div>
+      </div>
+
+      <div class="soft-card" style="align-items:stretch; text-align:left;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px;">
+              <div style="font-size:19px; font-weight:700; display:flex; align-items:center; gap:8px; font-family:'Fredoka';">📊 RAPOR KELAS <span id="rapor-num">1</span></div>
+              <div style="background:#F2F4FF; border-radius: 14px; padding: 8px 12px; font-weight: 900; font-size: 12px; text-align: center; color:var(--ink-soft);">1/5<br>SELESAI</div>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+              <div style="font-weight:900; font-size:14.5px; color:var(--ink-soft);">Jawaban Kuis Benar:</div>
+              <div style="background:#F2F4FF; border-radius: 14px; padding: 8px 12px; font-weight: 900; font-size: 14px; text-align: center; min-width: 80px;">0 / 0<br><span style="font-size:11px; color:var(--ink-soft);">Soal</span></div>
+          </div>
+          <div style="border-top: 2px dashed #E8EBFA; margin: 12px 0;"></div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+              <div style="font-weight:900; font-size:14.5px; color:var(--ink-soft);">Tingkat Akurasi:</div>
+              <div style="background:#EAFBF3; color:#189A63; border-radius: 14px; padding: 10px 14px; font-weight: 900; font-size: 22px; text-align: center; min-width: 70px;">0%</div>
+          </div>
+          <div style="background:#E8EBFA; border-radius:999px; height:14px; overflow:hidden; width: 100%;">
+              <div id="rapor-pb" style="height:100%; width:20%; background:var(--grad-mint); border-radius:999px;"></div>
+          </div>
+      </div>
+
+      <div class="module-list" id="misi-module-list"></div>
+  </div>
+
+  <!-- SCREEN: CATEGORY TOPIK -->
+  <div id="screen-category" class="screen">
+      <button id="btn-back-cat" class="btn-back">← Kembali</button>
+      <h2 class="title-large" style="font-size:24px;">Pilih Topik 🗂️</h2>
+      <div id="category-list" style="display:flex; flex-direction:column; gap:10px; overflow-y:auto; flex-grow:1; margin-top:10px;"></div>
+  </div>
+
+  <!-- SCREEN: MODULE GAMEPLAY -->
+  <div id="screen-module" class="screen">
+      <div style="display: flex; justify-content:space-between; align-items:center; width: 100%;">
+          <button id="btn-back-mod" class="btn-back" style="margin-bottom:0; width: auto;">← Berhenti</button>
+          <div style="font-weight:900; font-size:15px; background:#fff; padding:10px 18px; border-radius:999px; box-shadow:var(--shadow-soft);">Skor: <span id="game-score" style="color:var(--primary);">0</span></div>
+      </div>
+      <div id="module-header-default" style="text-align:center; margin-top:16px; width: 100%;">
+          <h2 id="module-title" style="font-size:22px; text-transform:uppercase; font-weight:700;">Modul</h2>
+          <div class="progress-bar-small"><div id="module-progress" class="progress-fill"></div></div>
+      </div>
+
+      <div id="module-tab-container" class="pill-tabs" style="display:none; margin-top:16px; margin-bottom:0;">
+          <div class="pill-tab active" id="tab-noun" onclick="window.switchGameTab('noun')">📦 Benda / Orang</div>
+          <div class="pill-tab" id="tab-verb" onclick="window.switchGameTab('verb')">🏃 Aktivitas / Kerja</div>
+      </div>
+
+      <div id="module-content" style="flex-grow:1; width:100%; display:flex; flex-direction:column; align-items:center; margin-top: 16px;"></div>
+  </div>
+
+  <!-- ================= KAMUS PINTAR ================= -->
+  <div id="screen-dictionary" class="screen">
+      <button id="btn-back-dict" class="btn-back">← Menu Utama</button>
+      <div class="soft-card" style="background:var(--grad-sun); color:#5C3A00; box-shadow:0 12px 28px rgba(255,169,64,.35); padding:18px;">
+          <h2 style="font-size:24px; margin:0; font-weight:700;">KAMUS PINTAR 📖</h2>
+          <p style="font-size:13px; font-weight:800; margin:4px 0 0;">Cari & Dengarkan Kosakata</p>
+          <div style="margin-top:10px; background:rgba(255,255,255,.85); padding:6px 16px; border-radius:999px; font-weight:900; font-size:13px; display:inline-block; color:#5C3A00;">Total Kosakata: <span id="vocab-count-text">0</span> / 5000 Target</div>
+      </div>
+
+      <div style="display:flex; flex-direction: column; gap: 10px;">
+          <input type="text" id="dict-search-input" placeholder="🔍 Cari bahasa Inggris / Indonesia...">
+          <select id="dict-filter-select">
+              <option value="All">Semua Topik</option>
+              <option value="Daily Activity">Daily Activity</option>
+              <option value="At School">At School</option>
+              <option value="My Family">My Family</option>
+              <option value="Pets & Nature">Pets & Nature</option>
+              <option value="Healthy Habits">Healthy Habits</option>
+          </select>
+      </div>
+
+      <div class="dict-list" id="dict-list-container"></div>
+  </div>
+
+  <!-- ================= ZONA BERMAIN ================= -->
+  <div id="screen-games-menu" class="screen" style="padding-bottom: 40px;">
+      <button id="btn-back-games" class="btn-back">← Menu Utama</button>
+      <div class="soft-card" style="background:var(--grad-mint); color:#fff; box-shadow:0 12px 28px rgba(43,184,218,.35);">
+          <div style="font-size:60px; margin-bottom:8px;" class="anim-bounce">🎪</div>
+          <h2 style="font-size:28px; line-height: 1; margin-bottom:5px; font-weight:700;">ZONA BERMAIN</h2>
+          <p style="font-weight:900; font-size:13px; opacity:.9;">Kumpulkan bintang dari mini-games!</p>
+      </div>
+
+      <div class="module-list">
+          <div class="module-item" onclick="window.startGameEngine('catch')">
+              <div class="module-item-icon anim-bounce" style="background:#FFF2E0;">🧺</div>
+              <div class="module-item-info"><h3>Tangkap Hujan</h3><p>Geser keranjang nangkap barang</p></div>
+              <div class="module-status-badge">▶</div>
+          </div>
+          <div class="module-item" onclick="window.startGameEngine('memory')">
+              <div class="module-item-icon anim-pulse" style="background:#EFEEFF;">🃏</div>
+              <div class="module-item-info"><h3>Memory Match</h3><p>Cocokkan gambar & inggris</p></div>
+              <div class="module-status-badge">▶</div>
+          </div>
+          <div class="module-item" onclick="window.startGameEngine('shadow')">
+              <div class="module-item-icon anim-float" style="background:#E7F6FF;">👤</div>
+              <div class="module-item-info"><h3>Tebak Bayangan</h3><p>Siapa di balik bayangan ini?</p></div>
+              <div class="module-status-badge">▶</div>
+          </div>
+          <div class="module-item" onclick="window.startGameEngine('balloon')">
+              <div class="module-item-icon anim-wobble" style="background:#FFEDF3;">🎈</div>
+              <div class="module-item-info"><h3>Pop Balloon</h3><p>Pecahkan balon kosa kata!</p></div>
+              <div class="module-status-badge">▶</div>
+          </div>
+      </div>
+  </div>
+
+  <!-- SCREEN: PLAY AREA ARCADE -->
+  <div id="screen-play-game" class="screen">
+      <div style="display: flex; justify-content:space-between; align-items:center; width:100%;">
+          <button id="btn-stop-game" class="btn-back" style="margin-bottom:0; width: auto;">← Berhenti</button>
+          <div style="font-weight:900; font-size:16px; background:#fff; padding:10px 18px; border-radius:999px; box-shadow:var(--shadow-soft);">Skor: <span id="mini-game-score" style="color:var(--primary);">0</span></div>
+      </div>
+      <div class="game-stats-row">
+          <div class="stat-pill" style="color:#C62838;">❤️ <span id="game-lives">3</span></div>
+          <div class="stat-pill" style="color:#1857B0;">⏱️ <span id="game-timer">60</span>s</div>
+      </div>
+      <div id="mini-game-content" style="flex-grow:1; width:100%; display:flex; flex-direction:column; align-items:center; margin-top: 15px;"></div>
+  </div>
+
+  <!-- FINISH/MESSAGE MODAL -->
+  <div id="custom-modal">
+    <div class="soft-card" style="padding:36px 22px;">
+      <div id="modal-emoji" class="anim-bounce" style="font-size: 76px;">🎉</div>
+      <h3 id="modal-text" style="margin:18px 0; font-weight: 700; font-size: 22px; line-height:1.4;">Pesan</h3>
+      <button id="btn-close-modal" class="btn-primary" style="margin-bottom:0;">LANJUTKAN 🚀</button>
     </div>
+  </div>
 
-    <!-- Modal Reset Data -->
-    <div id="reset-modal" class="fixed inset-0 bg-black/50 z-[110] flex items-center justify-center hidden modal-enter">
-        <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-sm text-center border modal-content-enter">
-            <div class="bg-red-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-                <i data-lucide="alert-triangle" class="text-red-600 w-8 h-8"></i>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+  // ================= KONFIGURASI (identik dengan V4.8 agar data lama tetap terpakai) =================
+  const firebaseConfig = { apiKey: "AIzaSyCqq_TxdIPAM6mroR2WHfYU8yjBs_C80-A", authDomain: "buddyspeak-3b7d9.firebaseapp.com", projectId: "buddyspeak-3b7d9", storageBucket: "buddyspeak-3b7d9.firebasestorage.app", messagingSenderId: "108845140350", appId: "1:108845140350:web:c3178d5bc448a26bdc8b2f" };
+  const GEMINI_API_KEY = ""; // <-- Isi API key Gemini di sini untuk fitur "Ngobrol Sama Buddy"
+
+  const fbApp = initializeApp(firebaseConfig);
+  const auth = getAuth(fbApp);
+  const db = getFirestore(fbApp);
+
+  // CATATAN LEVEL: nilai internal currentLevel tetap 2-7 (kompatibel dgn data cloud V4.8).
+  // Tampilan ke anak = "Kelas (level - 1) SD", sehingga rentangnya Kelas 1 s.d. Kelas 6 SD.
+  const toKelas = (lvl) => Math.min(6, Math.max(1, (Number(lvl) || 2) - 1));
+
+  let PROGRESS = { childName: "", currentLevel: 2, mascot: "🦊", totalPoints: 0, modulesDone: {}, photoUrl: "", domicile: "", phone: "", school: "", address: "" };
+  let APP_STATE = { activeModule: null, currentTopic: null, items: [], currentIndex: 0, score: 0, selectedParts: [], currentTab: 'noun' };
+
+  const THEMES = ["Daily Activity", "At School", "My Family", "Pets & Nature", "Healthy Habits"];
+  const COLORS = ['#FFE3EE', '#FFF6D6', '#DDF6E8', '#DFF2FF', '#F0E4FF', '#FFEBD9', '#F4F8D8'];
+
+  let CLOUD_NOUNS = {};
+  let CLOUD_VERBS = {};
+  let CLOUD_SCRAMBLE = {};
+  let CLOUD_STORY = {};
+  let CLOUD_ABJAD = {};
+  const DICT_MASTER = [];
+
+  const getEl = (id) => document.getElementById(id);
+  const bind = (id, evt, fn) => { const el = getEl(id); if(el) el.addEventListener(evt, fn); };
+
+  window.customAlert = (emoji, msg, onClose) => {
+      getEl('modal-emoji').innerText = emoji;
+      getEl('modal-text').innerHTML = msg;
+      getEl('custom-modal').style.display = 'flex';
+      getEl('btn-close-modal').onclick = () => {
+          getEl('custom-modal').style.display = 'none';
+          if (onClose) onClose();
+      };
+  };
+
+  // Konfeti perayaan sederhana
+  function launchConfetti() {
+      const pieces = ['🎉','⭐','✨','🎈','🌟','💜','💙'];
+      for(let i=0; i<18; i++) {
+          const el = document.createElement('div');
+          el.className = 'confetti-piece';
+          el.innerText = pieces[Math.floor(Math.random()*pieces.length)];
+          el.style.left = (Math.random()*100) + 'vw';
+          el.style.animationDuration = (1.6 + Math.random()*1.6) + 's';
+          el.style.fontSize = (16 + Math.random()*16) + 'px';
+          document.body.appendChild(el);
+          setTimeout(() => el.remove(), 3500);
+      }
+  }
+
+  function getCloudAHItems(lvl, type) {
+      const arr = CLOUD_ABJAD['level' + lvl] || [];
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const timeWords = ['AM', 'PM', "O'clock"];
+      const mathSymbols = ['+', '-', 'x', '÷', '=', '%', '<', '>', '≤', '≥', '≠', '±', '½', '⅓', '¼', '¾', '√', 'π', '°', '$', 'Rp', '&', '@', '#', '!', '?', '(', ')', '{', '.'];
+
+      return arr.filter(item => {
+          const charStr = item.char || "";
+          const isAngka = /[0-9]/.test(charStr) || mathSymbols.includes(charStr) || timeWords.includes(charStr) || monthNames.includes(charStr);
+          return type === 'angka' ? isAngka : !isAngka;
+      }).map(item => ({
+          sym: item.char,
+          ph: item.phonics,
+          sp: item.meaning,
+          speakText: item.ai_text || item.char
+      }));
+  }
+
+  function getDynamicIcon(item, isShadow = false) {
+      if (item.image && item.image.trim() !== "") {
+          if (isShadow) {
+              return `<img src="${item.image}" id="shadow-img" style="width:120px; height:120px; border-radius:24px; object-fit:cover; filter: brightness(0); transition: filter 0.5s;" onerror="this.style.display='none';">`;
+          }
+          return `<img src="${item.image}" class="anim-bounce" style="width:120px; height:120px; border-radius:24px; box-shadow:var(--shadow-soft); object-fit:cover; margin-bottom:15px;" onerror="this.style.display='none';">`;
+      }
+      if (!item.emoji || item.emoji === "✨" || item.emoji === "" || item.emoji === "📌") {
+          return ``;
+      }
+      if(isShadow) {
+           return `<div id="shadow-img" style="font-size:100px; filter: brightness(0); transition: filter 0.5s;">${item.emoji}</div>`;
+      }
+      return `<div style="font-size:86px; filter:drop-shadow(0 8px 12px rgba(0,0,0,.12));" class="anim-bounce">${item.emoji}</div>`;
+  }
+
+  window.renderDictionary = () => {
+      const container = getEl('dict-list-container');
+      const searchVal = getEl('dict-search-input').value.toLowerCase().trim();
+      const filterVal = getEl('dict-filter-select').value;
+      const countEl = getEl('vocab-count-text');
+
+      if(countEl) countEl.innerText = DICT_MASTER.length;
+      container.innerHTML = '';
+
+      const filtered = DICT_MASTER.filter(item => {
+          const matchTopic = filterVal === 'All' || item.topic === filterVal;
+          const matchSearch = item.en.toLowerCase().includes(searchVal) || item.id.toLowerCase().includes(searchVal);
+          return matchTopic && matchSearch;
+      });
+
+      if(filtered.length === 0) {
+          container.innerHTML = '<div style="text-align:center; font-weight:900; font-size:17px; padding:30px; color:var(--ink-soft);">Kosa kata tidak ditemukan 🥺</div>';
+          return;
+      }
+
+      filtered.sort((a,b) => a.en.localeCompare(b.en)).forEach(item => {
+          const div = document.createElement('div');
+          div.className = 'dict-item';
+
+          let iconHtml = '';
+          if (item.image && item.image.trim() !== "") {
+               iconHtml = `<img src="${item.image}" style="width:56px; height:56px; border-radius:16px; object-fit:cover; margin-right:14px; box-shadow:var(--shadow-soft);" onerror="this.style.display='none';">`;
+          } else if (!item.emoji || item.emoji === "✨" || item.emoji === "📖" || item.emoji === "" || item.emoji === "📌") {
+               iconHtml = ``;
+          } else {
+               iconHtml = `<div class="dict-icon">${item.emoji}</div>`;
+          }
+
+          div.innerHTML = `
+              <div style="display:flex; align-items:center; width:100%;">
+                  ${iconHtml}
+                  <div class="dict-content">
+                      <div class="dict-en">${item.en}</div>
+                      <div class="dict-id">${item.id}</div>
+                      <div style="font-size:10.5px; font-weight:900; color:#A9AECB; margin-top:4px; text-transform:uppercase; letter-spacing:.5px;">${item.topic}</div>
+                  </div>
+                  <button class="dict-play" onclick="window.speak('${item.en.replace(/'/g,"\\'")}')">🔊</button>
+              </div>
+          `;
+          container.appendChild(div);
+      });
+  };
+
+  window.checkSimilarity = (s1, s2) => {
+      let longer = s1.toLowerCase().replace(/[^a-z0-9 ]/g, '').trim();
+      let shorter = s2.toLowerCase().replace(/[^a-z0-9 ]/g, '').trim();
+      if (longer.length < shorter.length) { let t = longer; longer = shorter; shorter = t; }
+      let longerLength = longer.length;
+      if (longerLength === 0) return 1.0;
+      let costs = new Array();
+      for (let i = 0; i <= longer.length; i++) {
+          let lastValue = i;
+          for (let j = 0; j <= shorter.length; j++) {
+              if (i === 0) costs[j] = j;
+              else if (j > 0) {
+                  let newValue = costs[j - 1];
+                  if (longer.charAt(i - 1) !== shorter.charAt(j - 1))
+                      newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
+                  costs[j - 1] = lastValue;
+                  lastValue = newValue;
+              }
+          }
+          if (i > 0) costs[shorter.length] = lastValue;
+      }
+      return (longerLength - costs[shorter.length]) / parseFloat(longerLength);
+  };
+
+  // SISTEM SUARA (TTS) ANTI-UBAH UNTUK SEMUA DEVICE
+  let availableVoices = [];
+  function loadVoices() {
+      if ('speechSynthesis' in window) {
+          availableVoices = window.speechSynthesis.getVoices();
+      }
+  }
+
+  if ('speechSynthesis' in window) {
+      loadVoices();
+      if (speechSynthesis.onvoiceschanged !== undefined) {
+          speechSynthesis.onvoiceschanged = loadVoices;
+      }
+  }
+
+  function speak(text) {
+      if (!('speechSynthesis' in window)) return;
+
+      window.speechSynthesis.cancel();
+      const ut = new SpeechSynthesisUtterance(text);
+
+      ut.rate = 0.85;
+      ut.pitch = 1.1;
+
+      let voices = window.speechSynthesis.getVoices();
+      if (voices.length === 0) voices = availableVoices;
+
+      if (voices.length > 0) {
+          let selectedVoice = voices.find(v => v.name.includes('Google UK English Female')) ||
+                              voices.find(v => v.name.includes('Martha')) ||
+                              voices.find(v => v.name.includes('Serena')) ||
+                              voices.find(v => v.name.includes('Hazel')) ||
+                              voices.find(v => v.lang === 'en-GB' || v.lang === 'en_GB') ||
+                              voices.find(v => v.name.includes('Female') && v.lang.startsWith('en')) ||
+                              voices.find(v => v.lang.startsWith('en'));
+
+          if (selectedVoice) {
+              ut.voice = selectedVoice;
+              ut.lang = selectedVoice.lang;
+          } else {
+              ut.lang = 'en-GB';
+          }
+      } else {
+          ut.lang = 'en-GB';
+      }
+
+      window.speechSynthesis.speak(ut);
+  }
+  window.speak = speak;
+
+  function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => {
+          s.classList.remove('active');
+          s.style.display = '';
+      });
+      const target = getEl(id);
+      if(target) target.classList.add('active');
+  }
+
+  async function saveProgress() { if(auth.currentUser) await setDoc(doc(db, 'artifacts', 'buddyspeak-v4', 'users', auth.currentUser.uid, 'data', 'progress'), PROGRESS); }
+
+  // ================= MESIN MINI GAMES =================
+  const GameEngine = {
+      active: null, score: 0, lives: 3, time: 60, timerInt: null, spawnInt: null,
+      init: function(type) {
+          this.active = type; this.score = 0; this.lives = 3; this.time = 60;
+          getEl('mini-game-score').innerText = '0';
+          getEl('game-lives').innerText = '3';
+          getEl('game-timer').innerText = '60';
+          getEl('mini-game-content').innerHTML = '';
+
+          if(type === 'catch') this.startCatch();
+          else if(type === 'memory') this.startMemory();
+          else if(type === 'shadow') this.startShadow();
+          else if(type === 'balloon') this.startBalloon();
+
+          this.timerInt = setInterval(() => {
+              this.time--; getEl('game-timer').innerText = this.time;
+              if(this.time <= 0) this.finish("WAKTU HABIS! ⏱️");
+          }, 1000);
+          showScreen('screen-play-game');
+      },
+      finish: function(status) {
+          clearInterval(this.timerInt); clearInterval(this.spawnInt);
+          this.active = null;
+          PROGRESS.totalPoints += Math.floor(this.score/2); saveProgress();
+          let emoji = this.lives > 0 ? "🏆" : "💔";
+          if(this.lives > 0) launchConfetti();
+          let msg = status + '<br><span style="font-size:17px; font-weight:normal;">Skor Akhir: ' + this.score + '</span><br>⭐ +' + Math.floor(this.score/2) + ' Bintang';
+          window.customAlert(emoji, msg, () => {
+              showScreen('screen-games-menu');
+          });
+      },
+      startCatch: function() {
+          const gamePool = [
+              {en: "Apple", emoji: "🍎", id: "Apel"}, {en: "Banana", emoji: "🍌", id: "Pisang"},
+              {en: "Orange", emoji: "🍊", id: "Jeruk"}, {en: "Grape", emoji: "🍇", id: "Anggur"},
+              {en: "Strawberry", emoji: "🍓", id: "Stroberi"}, {en: "Watermelon", emoji: "🍉", id: "Semangka"}
+          ];
+          const target = gamePool[Math.floor(Math.random() * gamePool.length)];
+          getEl('mini-game-content').innerHTML = `
+            <div style="text-align:center; font-weight:900; background:#fff; padding:12px 18px; border-radius:999px; margin-bottom:14px; box-shadow:var(--shadow-soft);">TANGKAP: <span style="color:#FF6B4A; font-size:20px;">${target.en}</span></div>
+            <div class="catch-container" id="catch-zone"><div class="catch-basket" id="basket" style="left:50%">🧺</div></div>
+          `;
+          const zone = getEl('catch-zone'); const basket = getEl('basket');
+          let basketX = 50;
+          const move = (clientX) => {
+              const rect = zone.getBoundingClientRect();
+              let relX = ((clientX - rect.left) / rect.width) * 100;
+              if(relX < 10) relX = 10; if(relX > 90) relX = 90;
+              basketX = relX; basket.style.left = basketX + '%';
+          };
+          zone.onmousemove = (e) => move(e.clientX);
+          zone.ontouchmove = (e) => { e.preventDefault(); move(e.touches[0].clientX); };
+          this.spawnInt = setInterval(() => {
+              if(!this.active) return;
+              const spawner = Math.random() > 0.6 ? target : gamePool[Math.floor(Math.random() * gamePool.length)];
+              const el = document.createElement('div'); el.className = 'falling-item';
+              el.innerText = spawner.emoji;
+              const spawnX = Math.random()*80+10; el.style.left = spawnX + '%';
+              zone.appendChild(el);
+              let y = 0;
+              const fall = setInterval(() => {
+                  if(!this.active) { el.remove(); clearInterval(fall); return; }
+                  y += 4 + (this.score/50); el.style.top = y + 'px';
+                  if(y > 330 && y < 385) {
+                      if(Math.abs(spawnX - basketX) < 18) {
+                          if(spawner.en === target.en) { this.score += 10; getEl('mini-game-score').innerText = this.score; speak("Good"); }
+                          else { this.lives--; getEl('game-lives').innerText = this.lives; if(this.lives <= 0) this.finish("GAME OVER! 💔"); }
+                          clearInterval(fall); el.remove();
+                      }
+                  }
+                  if(y > 450) { clearInterval(fall); el.remove(); }
+              }, 30);
+          }, 1300);
+      },
+      startMemory: function() {
+          getEl('mini-game-content').innerHTML = `<div class="ah-grid" id="mem-grid" style="grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top:20px; width:100%;"></div>`;
+          const gamePool = [
+              {en: "Dog", emoji: "🐶"}, {en: "Cat", emoji: "🐱"}, {en: "Fish", emoji: "🐟"},
+              {en: "Bird", emoji: "🐦"}, {en: "Rabbit", emoji: "🐰"}, {en: "Turtle", emoji: "🐢"}
+          ];
+          const pool = gamePool.sort(()=>Math.random()-0.5).slice(0,4);
+          let cards = [];
+          pool.forEach((w, i) => {
+              cards.push({id:i, v:w.emoji, en:w.en});
+              cards.push({id:i, v:w.en, en:w.en});
+          });
+          cards.sort(()=>Math.random()-0.5);
+          let flipped = [];
+          cards.forEach((c) => {
+              const d = document.createElement('div');
+              d.className = 'ah-card';
+              d.style.padding = '5px';
+              d.style.minHeight = '86px';
+              d.innerHTML = '<span style="font-size: 36px; color: #C6CBEF; font-weight: 900;">?</span>';
+              d.onclick = () => {
+                  if(flipped.length < 2 && !d.classList.contains('open')) {
+                      let isEmoji = c.v !== c.en;
+                      let fSize = isEmoji ? '46px' : (c.v.length > 7 ? '13px' : '16px');
+                      d.innerHTML = `<span style="font-size: ${fSize}; font-weight: 900; line-height: 1.1; text-align: center; word-break: break-word;">${c.v}</span>`;
+                      d.classList.add('open');
+                      d.style.borderColor = 'var(--primary)';
+                      speak(c.en);
+                      flipped.push({c, d});
+                      if(flipped.length === 2) {
+                          if(flipped[0].c.id === flipped[1].c.id) {
+                              this.score += 20;
+                              getEl('mini-game-score').innerText = this.score;
+                              flipped.forEach(f => f.d.style.background = '#EAFBF3');
+                              flipped = [];
+                          } else {
+                              setTimeout(() => {
+                                  flipped.forEach(f => {
+                                      f.d.innerHTML = '<span style="font-size: 36px; color: #C6CBEF; font-weight: 900;">?</span>';
+                                      f.d.classList.remove('open');
+                                      f.d.style.borderColor = 'transparent';
+                                  });
+                                  flipped = [];
+                              }, 1000);
+                          }
+                      }
+                  }
+              };
+              getEl('mem-grid').appendChild(d);
+          });
+      },
+      startShadow: function() {
+          const gamePool = [
+              {en: "Apple", emoji: "🍎"}, {en: "Car", emoji: "🚗"}, {en: "Tree", emoji: "🌳"},
+              {en: "House", emoji: "🏠"}, {en: "Star", emoji: "⭐"}, {en: "Cat", emoji: "🐱"}
+          ];
+          const target = gamePool[Math.floor(Math.random() * gamePool.length)];
+          let opts = [target.en];
+          while(opts.length < 4 && gamePool.length >= 4) {
+              let rnd = gamePool[Math.floor(Math.random() * gamePool.length)].en;
+              if(!opts.includes(rnd)) opts.push(rnd);
+          }
+          opts.sort(() => Math.random() - 0.5);
+
+          const shadowHTML = `<div id="shadow-img" style="font-size:100px; filter: brightness(0); transition: filter 0.5s;">${target.emoji}</div>`;
+
+          getEl('mini-game-content').innerHTML = `
+              <div style="text-align:center; font-weight:900; background:#fff; padding:12px 20px; border-radius:999px; margin-bottom:14px; box-shadow:var(--shadow-soft); width:auto;">Tebak Bayangan Ini! 👀</div>
+              <div class="soft-card" style="width:100%; padding:40px 20px; background:linear-gradient(160deg,#EEF2FF,#FDF3FF);">
+                  ${shadowHTML}
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; width:100%;" id="shadow-opts-zone"></div>
+          `;
+
+          const optZone = getEl('shadow-opts-zone');
+          opts.forEach(o => {
+              const btn = document.createElement('button');
+              btn.className = 'btn-secondary';
+              btn.style.cssText = 'justify-content:center; margin:0; font-size:16px;';
+              btn.innerText = o;
+              btn.onclick = () => window.checkShadow(o, target.en, btn);
+              optZone.appendChild(btn);
+          });
+
+          window.checkShadow = (sel, cor, btn) => {
+              if(sel === cor) {
+                  const shadowImg = getEl('shadow-img');
+                  if (shadowImg) shadowImg.style.filter = 'brightness(1)';
+                  this.score += 20; getEl('mini-game-score').innerText = this.score;
+                  speak("Excellent!");
+                  setTimeout(() => this.startShadow(), 1500);
+              } else {
+                  btn.style.background = '#FFE9EB';
+                  btn.style.borderColor = '#FFC1C8';
+                  this.lives--; getEl('game-lives').innerText = this.lives;
+                  speak("Try again!");
+                  if(this.lives <= 0) this.finish("GAME OVER! 💔");
+              }
+          };
+      },
+      startBalloon: function() {
+          getEl('mini-game-content').innerHTML = `
+              <div style="text-align:center; font-weight:900; background:#fff; padding:12px 20px; border-radius:999px; margin-bottom:14px; box-shadow:var(--shadow-soft);">Sentuh Balon! 🎈</div>
+              <div class="catch-container" id="balloon-zone" style="background:linear-gradient(180deg,#E8F4FF,#FDF3FF);"></div>
+          `;
+          const zone = getEl('balloon-zone');
+          const gamePool = [
+              {en: "Mother", emoji: "👩"}, {en: "Father", emoji: "👨"}, {en: "Baby", emoji: "👶"},
+              {en: "Grandpa", emoji: "👴"}, {en: "Boy", emoji: "👦"}, {en: "Girl", emoji: "👧"}
+          ];
+
+          let spawnTimer = 0;
+          let spawnThreshold = 1200;
+
+          this.spawnInt = setInterval(() => {
+              if(!this.active) return;
+              spawnTimer += 100;
+              spawnThreshold = Math.max(300, 1200 - (this.score * 6));
+
+              if (spawnTimer >= spawnThreshold) {
+                  spawnTimer = 0;
+                  const target = gamePool[Math.floor(Math.random() * gamePool.length)];
+                  const el = document.createElement('div');
+                  el.style.position = 'absolute';
+                  el.style.left = (Math.random() * 70 + 10) + '%';
+                  el.style.bottom = '-80px';
+                  el.style.cursor = 'pointer';
+                  el.style.transition = 'transform 0.1s';
+
+                  el.innerHTML = `
+                    <div style="background:${COLORS[Math.floor(Math.random()*COLORS.length)]}; border-radius:50% 50% 50% 50% / 40% 40% 60% 60%; width:64px; height:80px; display:flex; align-items:center; justify-content:center; box-shadow:inset -6px -6px 0 rgba(0,0,0,0.06), 0 6px 14px rgba(90,100,200,.18); position:relative;">
+                        <span style="font-size:30px; font-weight:900;">${target.emoji}</span>
+                        <div style="position:absolute; bottom:-16px; width:3px; height:20px; background:#B9BEE0; border-radius:2px;"></div>
+                    </div>`;
+
+                  zone.appendChild(el);
+                  let bottom = -80;
+                  let speed = 2.5 + (this.score / 25);
+
+                  el.onclick = () => {
+                      this.score += 5; getEl('mini-game-score').innerText = this.score;
+                      speak(target.en);
+                      el.innerHTML = '<span style="font-size:40px;">💥</span>';
+                      setTimeout(() => { clearInterval(moveInt); el.remove(); }, 200);
+                  };
+
+                  const moveInt = setInterval(() => {
+                      if(!this.active) { clearInterval(moveInt); el.remove(); return; }
+                      bottom += speed;
+                      el.style.bottom = bottom + 'px';
+                      if(bottom > 450) { clearInterval(moveInt); el.remove(); }
+                  }, 30);
+              }
+          }, 100);
+      }
+  };
+  window.startGameEngine = (t) => GameEngine.init(t);
+
+  // ================= ALUR AWAL: INTRO, IZIN, AUTH =================
+  let currentIntro = 1;
+
+  bind('btn-intro-next', 'click', () => {
+      if(currentIntro < 3) {
+          getEl(`intro-step-${currentIntro}`).classList.remove('active-step');
+          getEl(`dot-${currentIntro}`).classList.remove('active');
+          currentIntro++;
+          getEl(`intro-step-${currentIntro}`).classList.add('active-step');
+          getEl(`dot-${currentIntro}`).classList.add('active');
+      } else {
+          showScreen('screen-profile-setup');
+          setupMascotInit();
+      }
+  });
+
+  bind('btn-intro-skip', 'click', () => {
+      showScreen('screen-profile-setup');
+      setupMascotInit();
+  });
+
+  bind('btn-grant-permission', 'click', async () => {
+      try {
+          await navigator.mediaDevices.getUserMedia({ audio: true });
+          window.customAlert('✅', 'Izin mikrofon berhasil diberikan!', () => {
+              showScreen('screen-profile-setup');
+              setupMascotInit();
+          });
+      } catch(err) {
+          window.customAlert('⚠️', 'Izin mikrofon ditolak atau diblokir. Beberapa fitur mungkin tidak berjalan.', () => {
+              showScreen('screen-profile-setup');
+              setupMascotInit();
+          });
+      }
+  });
+
+  bind('btn-login-exec', 'click', async () => {
+      const e = getEl('input-email').value.trim();
+      const p = getEl('input-password').value;
+      if(!e || !p) { window.customAlert('⚠️', 'Data Belum Lengkap!<br><span style="font-size:15px;">Mohon isi email dan kata sandi terlebih dahulu.</span>'); return; }
+
+      const btn = getEl('btn-login-exec');
+      const oldText = btn.innerText;
+      btn.innerText = "MEMERIKSA... ⏳";
+      btn.disabled = true;
+      try {
+          const userCred = await signInWithEmailAndPassword(auth, e, p);
+          btn.innerText = "BERHASIL ✅";
+          checkUserProgressAndLoad(userCred.user);
+      } catch(err) {
+          btn.innerText = oldText;
+          btn.disabled = false;
+          let msg = err.message;
+          let rawCode = err.code;
+          if (err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
+              msg = "Akun belum terdaftar atau sandi salah!<br>Silakan klik tombol <b>DAFTAR BARU</b>.";
+          }
+          window.customAlert('❌', `Gagal Masuk!<br><span style="font-size:15px;">${msg}</span><br><br><span style="font-size:11px; color:#A9AECB;">Log Sistem: ${rawCode}</span>`);
+      }
+  });
+
+  bind('btn-register-exec', 'click', async () => {
+      const e = getEl('input-email').value.trim();
+      const p = getEl('input-password').value;
+      if(!e || !p) { window.customAlert('⚠️', 'Data Belum Lengkap!<br><span style="font-size:15px;">Mohon isi email dan kata sandi terlebih dahulu.</span>'); return; }
+      if(p.length < 6) { window.customAlert('⚠️', 'Sandi Terlalu Pendek!<br><span style="font-size:15px;">Kata sandi minimal harus 6 karakter.</span>'); return; }
+
+      const btn = getEl('btn-register-exec');
+      const oldText = btn.innerText;
+      btn.innerText = "MENDAFTAR... ⏳";
+      btn.disabled = true;
+      try {
+          const userCred = await createUserWithEmailAndPassword(auth, e, p);
+          btn.innerText = "BERHASIL ✅";
+          window.customAlert('🎉', 'Pendaftaran Sukses!<br><span style="font-size:15px;">Silakan lihat panduan aplikasi.</span>', () => {
+              isAppInitialized = true;
+              showScreen('screen-intro');
+              currentIntro = 1;
+              getEl('intro-step-1').classList.add('active-step');
+              getEl('intro-step-2').classList.remove('active-step');
+              getEl('intro-step-3').classList.remove('active-step');
+              getEl('dot-1').classList.add('active');
+              getEl('dot-2').classList.remove('active');
+              getEl('dot-3').classList.remove('active');
+          });
+      } catch(err) {
+          btn.innerText = oldText;
+          btn.disabled = false;
+          let msg = err.message;
+          let rawCode = err.code;
+          if (err.code === 'auth/email-already-in-use') {
+              msg = "Email ini sudah terdaftar!<br>Silakan klik tombol <b>MASUK SEKARANG</b>.";
+          }
+          window.customAlert('❌', `Gagal Daftar!<br><span style="font-size:15px;">${msg}</span><br><br><span style="font-size:11px; color:#A9AECB;">Log Sistem: ${rawCode}</span>`);
+      }
+  });
+
+  let isAppInitialized = false;
+
+  bind('btn-start-app', 'click', async () => {
+      const btn = getEl('btn-start-app');
+      btn.innerText = 'MEMINTA IZIN... 🎤';
+      btn.disabled = true;
+
+      try {
+          await navigator.mediaDevices.getUserMedia({ audio: true });
+      } catch(err) {
+          console.warn("Izin mikrofon ditolak atau diabaikan pengguna.");
+      }
+
+      isAppInitialized = true;
+
+      if (auth.currentUser) {
+          checkUserProgressAndLoad(auth.currentUser);
+      } else {
+          showScreen('screen-auth');
+      }
+  });
+
+  onAuthStateChanged(auth, (user) => {
+      if (isAppInitialized) {
+          if (user) checkUserProgressAndLoad(user);
+          else showScreen('screen-auth');
+      }
+  });
+
+  async function checkUserProgressAndLoad(user) {
+      showScreen('screen-loading');
+      const loadingText = getEl('loading-txt-display');
+      if(loadingText) loadingText.innerText = "MEMERIKSA AKUN... 🔍";
+
+      try {
+          const snap = await getDoc(doc(db, 'artifacts', 'buddyspeak-v4', 'users', user.uid, 'data', 'progress')).catch(()=>null);
+          if (snap && snap.exists() && snap.data().childName) {
+              PROGRESS = Object.assign(PROGRESS, snap.data());
+              if(Number(PROGRESS.currentLevel) < 2) PROGRESS.currentLevel = 2; // data lama level 1 (TK) dinaikkan ke Kelas 1 SD
+              fetchCloudDataAndGoToDashboard(user);
+          } else {
+              showScreen('screen-intro');
+              currentIntro = 1;
+              getEl('intro-step-1').classList.add('active-step');
+              getEl('intro-step-2').classList.remove('active-step');
+              getEl('intro-step-3').classList.remove('active-step');
+              getEl('dot-1').classList.add('active');
+              getEl('dot-2').classList.remove('active');
+              getEl('dot-3').classList.remove('active');
+          }
+      } catch (e) {
+          console.error(e);
+          showScreen('screen-auth');
+      }
+  }
+
+  async function fetchCloudDataAndGoToDashboard(user) {
+      showScreen('screen-loading');
+      const loadingText = getEl('loading-txt-display');
+      if(loadingText) loadingText.innerText = "MENGAMBIL MATERI AWAN... ☁️";
+
+      try {
+          const kamusSnap = await getDoc(doc(db, 'artifacts', 'buddyspeak-v4', 'public', 'data', 'materi_dasar', 'kamus_5000')).catch(()=>null);
+          if(kamusSnap && kamusSnap.exists()) {
+              const words = kamusSnap.data().words || [];
+              DICT_MASTER.length = 0;
+              words.forEach(w => DICT_MASTER.push({ topic: w.topic, type: 'mixed', en: w.en, id: w.id, emoji: '📖' }));
+          }
+
+          const aaSnap = await getDoc(doc(db, 'artifacts', 'buddyspeak-v4', 'public', 'data', 'materi_dasar', 'abjad_angka')).catch(()=>null);
+          if(aaSnap && aaSnap.exists()) {
+              CLOUD_ABJAD = aaSnap.data();
+          }
+
+          for (const cat of THEMES) {
+              const dictSnap = await getDoc(doc(db, 'artifacts', 'buddyspeak-v4', 'public', 'data', 'materi_dictionary', cat)).catch(()=>null);
+              if(dictSnap && dictSnap.exists()) {
+                  CLOUD_NOUNS[cat] = dictSnap.data().nouns || [];
+                  CLOUD_VERBS[cat] = dictSnap.data().verbs || [];
+              } else {
+                  CLOUD_NOUNS[cat] = []; CLOUD_VERBS[cat] = [];
+              }
+
+              const scrSnap = await getDoc(doc(db, 'artifacts', 'buddyspeak-v4', 'public', 'data', 'materi_scramble', cat)).catch(()=>null);
+              if(scrSnap && scrSnap.exists()) {
+                  CLOUD_SCRAMBLE[cat] = scrSnap.data();
+              } else {
+                  CLOUD_SCRAMBLE[cat] = {short:[], medium:[], long:[]};
+              }
+
+              const storySnap = await getDoc(doc(db, 'artifacts', 'buddyspeak-v4', 'public', 'data', 'materi_story', cat)).catch(()=>null);
+              if(storySnap && storySnap.exists()) {
+                  CLOUD_STORY[cat] = storySnap.data();
+              } else {
+                  CLOUD_STORY[cat] = {short:[], medium:[], long:[]};
+              }
+          }
+      } catch(e) {
+          console.error("Gagal mengunduh cloud:", e);
+      }
+
+      showScreen('screen-main-menu');
+      renderMainMenu();
+  }
+
+  // ================= PROFIL =================
+  function setupMascotInit() {
+      const grid = getEl('setup-mascot-grid'); grid.innerHTML = '';
+      ["🦊", "🐻", "🐸", "🦉", "🦋", "🦁"].forEach(m => {
+          const d = document.createElement('div'); d.className = 'mascot-item'; d.innerText = m;
+          if(PROGRESS.mascot === m) d.classList.add('selected');
+          d.onclick = () => {
+              PROGRESS.mascot = m;
+              if(!PROGRESS.photoUrl) getEl('setup-mascot-preview').innerText = m;
+              document.querySelectorAll('.mascot-item').forEach(x=>x.classList.remove('selected')); d.classList.add('selected');
+              getEl('btn-save-profile').disabled = false;
+          };
+          grid.appendChild(d);
+      });
+
+      if(PROGRESS.childName) getEl('setup-name').value = PROGRESS.childName;
+      if(PROGRESS.currentLevel) getEl('setup-level').value = Math.max(2, PROGRESS.currentLevel);
+      if(PROGRESS.domicile) getEl('setup-domicile').value = PROGRESS.domicile;
+      if(PROGRESS.phone) getEl('setup-phone').value = PROGRESS.phone;
+      if(PROGRESS.school) getEl('setup-school').value = PROGRESS.school;
+      if(PROGRESS.address) getEl('setup-address').value = PROGRESS.address;
+
+      if(PROGRESS.photoUrl) {
+          getEl('setup-mascot-preview').innerHTML = `<img src="${PROGRESS.photoUrl}" style="width:100%; height:100%; object-fit:cover;">`;
+      } else {
+          getEl('setup-mascot-preview').innerText = PROGRESS.mascot || "🦊";
+      }
+
+      if(PROGRESS.childName) getEl('btn-save-profile').disabled = false;
+
+      ['setup-name', 'setup-domicile', 'setup-phone', 'setup-school', 'setup-address', 'setup-level'].forEach(id => {
+          const el = getEl(id);
+          if(el) el.oninput = () => { getEl('btn-save-profile').disabled = false; };
+      });
+
+      const saveBtn = getEl('btn-save-profile');
+      const newSaveBtn = saveBtn.cloneNode(true);
+      saveBtn.parentNode.replaceChild(newSaveBtn, saveBtn);
+
+      newSaveBtn.addEventListener('click', async () => {
+          PROGRESS.childName = getEl('setup-name').value;
+          PROGRESS.currentLevel = parseInt(getEl('setup-level').value);
+          PROGRESS.domicile = getEl('setup-domicile').value;
+          PROGRESS.phone = getEl('setup-phone').value;
+          PROGRESS.school = getEl('setup-school').value;
+          PROGRESS.address = getEl('setup-address').value;
+
+          await saveProgress();
+          fetchCloudDataAndGoToDashboard(auth.currentUser);
+      });
+  }
+
+  bind('setup-photo', 'change', (e) => {
+      const file = e.target.files[0];
+      if(file) {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+              const img = new Image();
+              img.onload = () => {
+                  const canvas = document.createElement('canvas');
+                  const ctx = canvas.getContext('2d');
+                  const MAX_WIDTH = 250;
+                  const MAX_HEIGHT = 250;
+                  let width = img.width;
+                  let height = img.height;
+                  if (width > height) {
+                      if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+                  } else {
+                      if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
+                  }
+                  canvas.width = width; canvas.height = height;
+                  ctx.drawImage(img, 0, 0, width, height);
+                  const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                  PROGRESS.photoUrl = dataUrl;
+                  getEl('setup-mascot-preview').innerHTML = `<img src="${dataUrl}" style="width:100%; height:100%; object-fit:cover;">`;
+                  getEl('btn-save-profile').disabled = false;
+              };
+              img.src = event.target.result;
+          };
+          reader.readAsDataURL(file);
+      }
+  });
+
+  // ================= MENU UTAMA =================
+  function renderMainMenu() {
+      getEl('main-menu-name').innerText = `HAI, ${(PROGRESS.childName || 'TEMAN').toUpperCase()}!`;
+      getEl('main-menu-points').innerText = PROGRESS.totalPoints;
+
+      if (PROGRESS.photoUrl) {
+          getEl('main-mascot-box').innerHTML = `<img src="${PROGRESS.photoUrl}" style="width:100%; height:100%; object-fit:cover;">`;
+      } else {
+          getEl('main-mascot-box').innerText = PROGRESS.mascot || '🦊';
+      }
+
+      getEl('cur-lvl-num').innerText = toKelas(PROGRESS.currentLevel);
+      const sel = getEl('main-level-selector'); sel.innerHTML = '';
+      for(let i=2; i<=7; i++) {
+          const d = document.createElement('div'); d.className = `level-h-card ${i === PROGRESS.currentLevel ? 'active' : ''}`;
+          d.innerText = "KELAS " + (i-1);
+          d.onclick = () => { PROGRESS.currentLevel = i; renderMainMenu(); };
+          sel.appendChild(d);
+      }
+      showScreen('screen-main-menu');
+  }
+
+  // ================= ABJAD & HURUF =================
+  function renderAH(type) {
+      const cont = getEl('ah-container'); cont.innerHTML = '';
+      getEl('tab-huruf').className = `pill-tab ${type==='huruf'?'active':''}`;
+      getEl('tab-angka').className = `pill-tab ${type==='angka'?'active':''}`;
+
+      const lvl = Number(PROGRESS.currentLevel) || 2;
+      let items = getCloudAHItems(lvl, type);
+
+      const infoText = document.createElement('div');
+      infoText.style.cssText = "grid-column:1/-1; text-align:center; padding:12px; font-weight:900; color:#8A6D00; background:#FFF6D6; border-radius:16px; box-shadow:var(--shadow-soft); font-size:14px;";
+      infoText.innerText = `Menampilkan materi Kelas ${toKelas(lvl)} SD ⭐`;
+      cont.appendChild(infoText);
+
+      if (items && items.length > 0) {
+          items.forEach((item, idx) => {
+              if (!item) return;
+              const d = document.createElement('div'); d.className = 'ah-card'; d.style.background = COLORS[idx % COLORS.length];
+
+              let fSize = '36px';
+              if(item.sym && item.sym.length > 5) fSize = '26px';
+              if(item.sym && item.sym.length > 10) fSize = '19px';
+              if(item.sym && item.sym.length > 15) fSize = '15px';
+
+              d.innerHTML = `
+                  <div class="ah-text" style="font-size:${fSize}">${item.sym || ''}</div>
+                  <div class="ah-phonics">${item.ph || ''}</div>
+                  <div class="ah-writing" style="font-weight:900; margin-top:6px; padding-top:6px; border-top:2px dashed rgba(0,0,0,0.08);">Artinya:<br><span style="font-weight:800; color:var(--ink);">${item.sp || ''}</span></div>
+              `;
+              d.onclick = () => { speak(item.speakText); d.classList.add('anim-bounce'); setTimeout(()=>d.classList.remove('anim-bounce'), 800); };
+              cont.appendChild(d);
+          });
+      } else {
+          const emptyMsg = document.createElement('div');
+          emptyMsg.style.cssText = "grid-column:1/-1; text-align:center; padding:20px; font-weight:900; color:var(--ink-soft);";
+          emptyMsg.innerText = "Materi belum tersedia.";
+          cont.appendChild(emptyMsg);
+      }
+      showScreen('screen-ah');
+  }
+
+  // ================= DASHBOARD MISI =================
+  function renderMisiDashboard() {
+      const kelas = toKelas(PROGRESS.currentLevel);
+      getEl('misi-lvl-val').innerText = kelas;
+      getEl('misi-points-val').innerText = PROGRESS.totalPoints;
+      getEl('misi-grade-val').innerText = `Kelas ${kelas} SD ⭐`;
+      getEl('rapor-num').innerText = kelas;
+      getEl('buddy-message').innerText = `Halo ${PROGRESS.childName || 'Teman'} yang hebat, ayo semangat belajar hari ini supaya kamu jadi bintang kelas ${kelas} yang paling pintar dan membanggakan! 🌟📚✨`;
+
+      const listCont = getEl('misi-module-list');
+      listCont.innerHTML = `
+          <div class="module-item" onclick="window.openCategory('A')">
+              <div class="module-item-icon anim-float" style="background:#EFEEFF;">📇</div>
+              <div class="module-item-info"><h3>Kartu Pintar</h3><p>Kosakata & Audio</p></div>
+              <div class="module-status-badge" style="background:var(--grad-mint); box-shadow:0 6px 14px rgba(43,184,218,.35);">✓</div>
+          </div>
+          <div class="module-item" onclick="window.openCategory('B')">
+              <div class="module-item-icon anim-pulse" style="background:#E7F6FF;">🎮</div>
+              <div class="module-item-info"><h3>Tebak Kata</h3><p>Kuis Pilihan Ganda</p></div>
+              <div class="module-status-badge">▶</div>
+          </div>
+          <div class="module-item" onclick="window.openCategory('S')">
+              <div class="module-item-icon anim-wobble" style="background:#FFEDF3;">🧩</div>
+              <div class="module-item-info"><h3>Susun Kata</h3><p>Latih Struktur Kalimat</p></div>
+              <div class="module-status-badge">▶</div>
+          </div>
+          <div class="module-item" onclick="window.openCategory('E')">
+              <div class="module-item-icon anim-bounce" style="background:#FFF2E0;">📚</div>
+              <div class="module-item-info"><h3>Cerita Seru</h3><p>Membaca & AI Kuis</p></div>
+              <div class="module-status-badge">▶</div>
+          </div>
+      `;
+      showScreen('screen-dashboard');
+  }
+
+  window.openCategory = (mod) => {
+      APP_STATE.activeModule = mod;
+      APP_STATE.currentTab = 'noun';
+      const list = getEl('category-list'); list.innerHTML = '';
+      const topicEmojis = { "Daily Activity": "☀️", "At School": "🏫", "My Family": "👨‍👩‍👧", "Pets & Nature": "🌿", "Healthy Habits": "🍎" };
+      THEMES.forEach(t => {
+          const btn = document.createElement('button'); btn.className = 'btn-secondary';
+          btn.innerHTML = `<span>${topicEmojis[t] || '📌'} &nbsp;${t}</span> <span style="color:var(--primary);">▶</span>`;
+          btn.onclick = () => { APP_STATE.currentTopic = t; startMission(t); };
+          list.appendChild(btn);
+      });
+      showScreen('screen-category');
+  }
+
+  // ================= LOGIKA MATERI PER KELAS (identik V4.8, level internal 2-7) =================
+  function loadTabData() {
+      const cat = APP_STATE.currentTopic;
+      if (APP_STATE.activeModule === 'A' || APP_STATE.activeModule === 'B') {
+          let pool = APP_STATE.currentTab === 'verb' ? (CLOUD_VERBS[cat] || []) : (CLOUD_NOUNS[cat] || []);
+
+          const lvl = PROGRESS.currentLevel;
+          let requiredCount = 10;
+          let maxPoolIndex = pool.length;
+
+          if (lvl === 2) { requiredCount = 7; maxPoolIndex = Math.ceil(pool.length * 0.30); }
+          else if (lvl === 3) { requiredCount = 8; maxPoolIndex = Math.ceil(pool.length * 0.45); }
+          else if (lvl === 4) { requiredCount = 10; maxPoolIndex = Math.ceil(pool.length * 0.60); }
+          else if (lvl === 5) { requiredCount = 12; maxPoolIndex = Math.ceil(pool.length * 0.75); }
+          else if (lvl === 6) { requiredCount = 15; maxPoolIndex = Math.ceil(pool.length * 0.90); }
+          else if (lvl === 7) { requiredCount = 15; maxPoolIndex = pool.length; }
+
+          if (maxPoolIndex < requiredCount) maxPoolIndex = pool.length;
+
+          let availableWords = pool.slice(0, maxPoolIndex).sort(() => Math.random() - 0.5);
+          APP_STATE.items = availableWords.slice(0, Math.min(requiredCount, availableWords.length));
+
+          if(APP_STATE.items.length === 0) {
+              APP_STATE.items = [{en:"Empty", id:"Kosong", emoji:"🤷"}];
+          }
+      }
+  }
+
+  window.switchGameTab = (tab) => {
+      APP_STATE.currentTab = tab;
+      const tabNoun = getEl('tab-noun');
+      const tabVerb = getEl('tab-verb');
+      if(tabNoun) tabNoun.classList.remove('active');
+      if(tabVerb) tabVerb.classList.remove('active');
+      const currentTabEl = getEl('tab-' + tab);
+      if(currentTabEl) currentTabEl.classList.add('active');
+      loadTabData();
+      APP_STATE.currentIndex = 0; APP_STATE.score = 0;
+      renderGameItem();
+  };
+
+  function startMission(cat) {
+      const tabContainer = getEl('module-tab-container');
+      const tabNoun = getEl('tab-noun');
+      const tabVerb = getEl('tab-verb');
+
+      if (APP_STATE.activeModule === 'A' || APP_STATE.activeModule === 'B') {
+          if(tabContainer) tabContainer.style.display = 'flex';
+          if(tabNoun) tabNoun.classList.add('active');
+          if(tabVerb) tabVerb.classList.remove('active');
+          APP_STATE.currentTab = 'noun';
+          loadTabData();
+      } else {
+          if(tabContainer) tabContainer.style.display = 'none';
+
+          if (APP_STATE.activeModule === 'S') {
+              const skData = CLOUD_SCRAMBLE[cat] || {short:[], medium:[], long:[]};
+
+              const lvl = PROGRESS.currentLevel;
+              let requiredCount = lvl <= 3 ? 5 : (lvl <= 5 ? 7 : 10);
+              let sCount = 0, mCount = 0, lCount = 0;
+
+              if(lvl === 2) { sCount = Math.ceil(requiredCount * 0.7); mCount = requiredCount - sCount; }
+              else if(lvl === 3) { sCount = Math.ceil(requiredCount * 0.3); mCount = requiredCount - sCount; }
+              else if(lvl === 4) { mCount = requiredCount; }
+              else if(lvl === 5) { mCount = Math.ceil(requiredCount * 0.6); lCount = requiredCount - mCount; }
+              else if(lvl === 6) { mCount = Math.ceil(requiredCount * 0.3); lCount = requiredCount - mCount; }
+              else if(lvl === 7) { lCount = requiredCount; }
+              else { sCount = requiredCount; }
+
+              const sArr = (skData.short && skData.short.length > 0) ? skData.short : [{en: "I am happy", id: "Saya senang"}];
+              const mArr = (skData.medium && skData.medium.length > 0) ? skData.medium : [{en: "We play in the park", id: "Kami bermain di taman"}];
+              const lArr = (skData.long && skData.long.length > 0) ? skData.long : [{en: "My mother cooks delicious food for us", id: "Ibuku masak makanan enak untuk kami"}];
+
+              const shuf = (arr) => [...arr].sort(() => Math.random() - 0.5);
+
+              APP_STATE.items = [
+                  ...shuf(sArr).slice(0, Math.min(sCount, sArr.length)),
+                  ...shuf(mArr).slice(0, Math.min(mCount, mArr.length)),
+                  ...shuf(lArr).slice(0, Math.min(lCount, lArr.length))
+              ];
+              APP_STATE.items.sort(() => Math.random() - 0.5);
+
+              if(APP_STATE.items.length === 0) APP_STATE.items = [{en: "I love you", id: "Saya sayang kamu"}];
+
+          } else if (APP_STATE.activeModule === 'E') {
+              const csData = CLOUD_STORY[cat] || {short:[], medium:[], long:[]};
+
+              const lvl = PROGRESS.currentLevel;
+              let requiredCount = lvl <= 3 ? 3 : (lvl <= 5 ? 5 : 7);
+              let sCount = 0, mCount = 0, lCount = 0;
+
+              if(lvl === 2) { sCount = Math.ceil(requiredCount * 0.7); mCount = requiredCount - sCount; }
+              else if(lvl === 3) { sCount = Math.ceil(requiredCount * 0.3); mCount = requiredCount - sCount; }
+              else if(lvl === 4) { mCount = requiredCount; }
+              else if(lvl === 5) { mCount = Math.ceil(requiredCount * 0.6); lCount = requiredCount - mCount; }
+              else if(lvl === 6) { mCount = Math.ceil(requiredCount * 0.3); lCount = requiredCount - mCount; }
+              else if(lvl === 7) { lCount = requiredCount; }
+              else { sCount = requiredCount; }
+
+              const sArr = (csData.short && csData.short.length > 0) ? csData.short : [{en: "I have a cat.", id: "Saya punya kucing.", q: "Punya apa?", opts: ["Kucing","Anjing","Burung"], ans: "Kucing", emoji: "🐱"}];
+              const mArr = (csData.medium && csData.medium.length > 0) ? csData.medium : [{en: "I play football with my friends in the park.", id: "Saya main bola bersama teman di taman.", q: "Main apa?", opts: ["Bola","Basket","Tenis"], ans: "Bola", emoji: "⚽"}];
+              const lArr = (csData.long && csData.long.length > 0) ? csData.long : [{en: "On sunday my family goes to the zoo to see animals.", id: "Hari minggu keluargaku ke kebun binatang melihat hewan.", q: "Ke mana mereka pergi?", opts: ["Kebun binatang","Pasar","Taman"], ans: "Kebun binatang", emoji: "🦁"}];
+
+              const shuf = (arr) => [...arr].sort(() => Math.random() - 0.5);
+
+              let mixedStories = [
+                  ...shuf(sArr).slice(0, Math.min(sCount, sArr.length)),
+                  ...shuf(mArr).slice(0, Math.min(mCount, mArr.length)),
+                  ...shuf(lArr).slice(0, Math.min(lCount, lArr.length))
+              ];
+
+              APP_STATE.items = mixedStories;
+              APP_STATE.items.sort(() => Math.random() - 0.5);
+
+              if(APP_STATE.items.length === 0) APP_STATE.items = [{en: "I am happy.", id: "Saya senang.", q: "Bagaimana rasanya?", opts: ["Sedih","Senang"], ans: "Senang", emoji: "😊"}];
+
+          } else if (APP_STATE.activeModule === 'C') {
+              APP_STATE.items = [{en: "Chat", id: "Chat", emoji: "💬"}];
+          }
+      }
+
+      APP_STATE.currentIndex = 0; APP_STATE.score = 0;
+      renderGameItem();
+      showScreen('screen-module');
+  }
+
+  // ================= RENDER ITEM PERMAINAN =================
+  function renderGameItem() {
+      const item = APP_STATE.items[APP_STATE.currentIndex];
+      if(!item) return;
+
+      const cont = getEl('module-content');
+      if(!cont) return;
+
+      cont.innerHTML = '';
+      const scoreEl = getEl('game-score');
+      if(scoreEl) scoreEl.innerText = APP_STATE.score;
+
+      const hdrDef = getEl('module-header-default');
+      if(hdrDef) hdrDef.style.display = 'block';
+
+      const progEl = getEl('module-progress');
+      if(progEl) {
+          const progressPercent = (APP_STATE.currentIndex / APP_STATE.items.length) * 100;
+          progEl.style.width = progressPercent + '%';
+      }
+
+      const titleEl = getEl('module-title');
+      if(titleEl) {
+          const moduleNames = {'A': 'KARTU PINTAR', 'B': 'TEBAK KATA', 'S': 'SUSUN KATA', 'E': 'CERITA SERU', 'C': 'NGOBROL SAMA BUDDY'};
+          titleEl.innerText = moduleNames[APP_STATE.activeModule] || 'MODUL';
+      }
+
+      if(APP_STATE.activeModule === 'A') {
+          const dynamicIconHTML = getDynamicIcon(item, false);
+
+          cont.innerHTML = `
+            <div class="flashcard" style="background:${COLORS[APP_STATE.currentIndex%COLORS.length]}">
+                ${dynamicIconHTML}
+                <h1 style="font-size:44px; margin:10px 0; line-height:1.1; font-weight:700;">${item.en}</h1>
+                <div style="background:rgba(255,255,255,.9); border-radius:999px; padding:10px 26px; font-weight:900; box-shadow:var(--shadow-soft);">${item.id}</div>
+                <div style="display: flex; gap: 10px; margin-top:20px; width:100%;">
+                    <button class="btn-mic" id="btn-play-sound" style="flex:1; justify-content:center; background:var(--grad-primary); box-shadow:var(--shadow-pop);">🔊 DENGAR</button>
+                    <button class="btn-mic" id="btn-record-sound" style="flex:1; justify-content:center; background:var(--grad-coral); box-shadow:0 8px 22px rgba(255,122,133,.35);">🎙️ TIRUKAN</button>
+                </div>
+                <div id="mic-feedback" style="margin-top:14px; font-weight:800; font-size:14px; min-height:40px; width:100%;"></div>
+                <button class="btn-primary" style="margin-top:16px; margin-bottom:0;" id="btn-next-item">LANJUT →</button>
+            </div>`;
+
+          speak(item.en);
+          getEl('btn-play-sound').onclick = () => speak(item.en);
+          getEl('btn-next-item').onclick = () => window.nextItem();
+
+          let isRecording = false;
+          let rec = null;
+
+          getEl('btn-record-sound').onclick = () => {
+              const fb = getEl('mic-feedback');
+              const btn = getEl('btn-record-sound');
+
+              if (isRecording && rec) {
+                  try { rec.stop(); } catch(e) {}
+                  return;
+              }
+
+              const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+              if(!SpeechRec) {
+                  fb.innerHTML = "❌ <br>Browser di perangkat ini tidak mendukung mikrofon otomatis.<br>Gunakan Google Chrome terbaru.";
+                  return;
+              }
+
+              rec = new SpeechRec();
+              rec.lang = 'en-US';
+
+              rec.continuous = false;
+              rec.interimResults = true;
+              rec.maxAlternatives = 1;
+
+              let currentTranscript = "";
+
+              rec.onstart = () => {
+                  isRecording = true;
+                  btn.style.background = '#FF5252';
+                  btn.innerText = '🔴 BERHENTI';
+                  fb.innerText = "Mendengarkan... (Silakan bicara!)";
+              };
+
+              rec.onresult = (e) => {
+                  currentTranscript = '';
+                  for (let i = 0; i < e.results.length; ++i) {
+                      currentTranscript += e.results[i][0].transcript + " ";
+                  }
+                  fb.innerText = `Mendengar: "${currentTranscript.trim()}"`;
+              };
+
+              rec.onend = () => {
+                  isRecording = false;
+                  btn.style.background = '';
+                  btn.innerText = '🎙️ TIRUKAN';
+
+                  if (!currentTranscript.trim()) {
+                      fb.innerText = "Suara tidak tertangkap. Coba bicara lebih keras ya! 🗣️";
+                      return;
+                  }
+
+                  const transcript = currentTranscript.toLowerCase();
+                  const targetText = item.en.toLowerCase();
+
+                  const transcriptClean = transcript.replace(/[^a-z0-9 ]/g, '').trim();
+                  const targetClean = targetText.replace(/[^a-z0-9 ]/g, '').trim();
+
+                  const sim = window.checkSimilarity(transcriptClean, targetClean);
+
+                  let isCorrect = false;
+                  if (sim >= 0.35) isCorrect = true;
+                  if (transcriptClean.includes(targetClean)) isCorrect = true;
+
+                  if (targetClean.length <= 3 && sim < 0.50 && !transcriptClean.includes(targetClean)) {
+                      isCorrect = false;
+                  }
+
+                  if(isCorrect) {
+                      APP_STATE.score += 15;
+                      if(scoreEl) scoreEl.innerText = APP_STATE.score;
+                      let accDisplay = transcriptClean.includes(targetClean) ? 100 : Math.round(sim*100);
+                      if (accDisplay < 50) accDisplay = 100;
+
+                      fb.innerHTML = `Kamu bilang: "${currentTranscript.trim()}"<br><span style="color:#189A63;">Hebat! Benar! (Akurasi: ${accDisplay}%)</span>`;
+                      setTimeout(() => window.nextItem(), 2000);
+                  } else {
+                      fb.innerHTML = `Kamu bilang: "${currentTranscript.trim()}"<br><span style="color:#C62838;">Coba lagi yuk! (Akurasi: ${Math.round(sim*100)}%)</span>`;
+                  }
+              };
+
+              rec.onerror = (e) => {
+                  isRecording = false;
+                  btn.style.background = '';
+                  btn.innerText = '🎙️ TIRUKAN';
+
+                  if(e.error === 'no-speech' || e.error === 'aborted') {
+                      fb.innerText = "Mikrofon berhenti. Ketuk 'Tirukan' lalu mulai bicara ya!";
+                  } else if (e.error === 'not-allowed') {
+                      fb.innerHTML = "❌ <br>Akses mikrofon diblokir. Izinkan mikrofon di pengaturan browser Anda.";
+                  } else {
+                      fb.innerText = "Gagal mendengar: " + e.error;
+                  }
+              };
+
+              try {
+                  rec.start();
+              } catch(err) {
+                  console.log(err);
+                  isRecording = false;
+                  btn.style.background = '';
+                  btn.innerText = '🎙️ TIRUKAN';
+              }
+          };
+
+      } else if(APP_STATE.activeModule === 'B') {
+          const cat = APP_STATE.currentTopic;
+          const pool = APP_STATE.currentTab === 'verb' ? (CLOUD_VERBS[cat] || []) : (CLOUD_NOUNS[cat] || []);
+
+          let distractors = [...new Set(pool.map(x => x.en).filter(en => en !== item.en))].sort(() => Math.random() - 0.5).slice(0, 3);
+          const opts = [item.en, ...distractors].sort(() => Math.random() - 0.5);
+
+          const cardDiv = document.createElement('div');
+          cardDiv.className = 'soft-card';
+          cardDiv.style.cssText = 'width:100%;';
+
+          const dynamicIconHTML = getDynamicIcon(item, false);
+
+          cardDiv.innerHTML = `
+              ${dynamicIconHTML}
+              <h2 style="font-size:28px; color:#FF6B4A; line-height: 1.2; margin: 0; font-weight:700;">${item.id}</h2>`;
+
+          cont.appendChild(cardDiv);
+
+          const grid = document.createElement('div');
+          grid.style.cssText = 'display:grid; grid-template-columns:1fr 1fr; gap:12px; width:100%;';
+          opts.forEach(o => {
+              const btn = document.createElement('button');
+              btn.className = 'btn-secondary';
+              btn.style.cssText = 'justify-content:center; margin:0; font-size:' + (o.length > 15 ? '13px' : '16px') + '; padding:10px; min-height:80px; text-align:center;';
+              btn.innerText = o;
+              btn.onclick = () => window.checkTebak(o, item.en, btn);
+              grid.appendChild(btn);
+          });
+          cont.appendChild(grid);
+
+          window.checkTebak = (sel, cor, btn) => {
+              cont.querySelectorAll('button').forEach(b => b.disabled = true);
+              if(sel === cor) {
+                  btn.style.background = '#DDF6E8';
+                  btn.style.borderColor = '#3DD9A4';
+                  APP_STATE.score += 10;
+                  if(scoreEl) scoreEl.innerText = APP_STATE.score;
+                  speak('Great!');
+                  setTimeout(() => window.nextItem(), 1000);
+              } else {
+                  btn.style.background = '#FFE9EB';
+                  btn.style.borderColor = '#FFC1C8';
+                  speak('Oops, try again!');
+                  setTimeout(() => {
+                      btn.style.background = '#fff';
+                      btn.style.borderColor = '#EEF0FB';
+                      cont.querySelectorAll('button').forEach(b => b.disabled = false);
+                  }, 1000);
+              }
+          };
+
+      } else if(APP_STATE.activeModule === 'E') {
+          if(hdrDef) hdrDef.style.display = 'none';
+
+          const storyFontSize = item.en.length > 150 ? '15px' : '17px';
+
+          const hdr = document.createElement('div');
+          hdr.className = 'scramble-header-card';
+          hdr.innerHTML = '<h2>CERITA SERU 📚</h2>';
+          cont.appendChild(hdr);
+
+          const storyCard = document.createElement('div');
+          storyCard.className = 'story-main-card';
+          storyCard.innerHTML =
+              '<div class="story-en-text" style="font-size:' + storyFontSize + ';">' + item.en.replace(/\n/g, '<br>') + '</div>' +
+              '<div class="story-id-text">' + item.id.replace(/\n/g, '<br>') + '</div>' +
+              '<p style="font-size:12px; font-weight:800; color:var(--primary); text-align:center;">👆 KLIK KOTAK INI UNTUK SUARA</p>';
+          storyCard.onclick = () => speak(item.en.replace(/\n/g, ' '));
+          cont.appendChild(storyCard);
+
+          const kuisBtn = document.createElement('button');
+          kuisBtn.className = 'btn-primary sun';
+          kuisBtn.innerText = 'MULAI KUIS! 🚀';
+          kuisBtn.onclick = () => window.renderStoryQuiz();
+          cont.appendChild(kuisBtn);
+
+          speak(item.en.replace(/\n/g, ' '));
+
+          window.renderStoryQuiz = () => {
+              cont.innerHTML = '';
+
+              const qHdr = document.createElement('div');
+              qHdr.className = 'scramble-header-card';
+              qHdr.innerHTML = '<h2>KUIS CERITA 🧠</h2>';
+              cont.appendChild(qHdr);
+
+              const qText = document.createElement('div');
+              qText.className = 'quiz-question-text';
+              qText.innerText = '🤔 ' + item.q;
+              cont.appendChild(qText);
+
+              const optsDiv = document.createElement('div');
+              optsDiv.style.cssText = 'display:flex; flex-direction:column; gap:10px; width:100%;';
+              item.opts.forEach(o => {
+                  const btn = document.createElement('button');
+                  btn.className = 'btn-secondary';
+                  btn.style.margin = '0';
+                  btn.innerText = o;
+                  btn.onclick = () => window.checkE(o, item.ans, btn);
+                  optsDiv.appendChild(btn);
+              });
+              cont.appendChild(optsDiv);
+          };
+
+          window.checkE = (s, c, btn) => {
+              cont.querySelectorAll('.btn-secondary').forEach(b => b.disabled = true);
+              if(s === c) {
+                  btn.style.background = '#DDF6E8';
+                  btn.style.borderColor = '#3DD9A4';
+                  APP_STATE.score += 20;
+                  if(scoreEl) scoreEl.innerText = APP_STATE.score;
+                  speak('Very Good!');
+                  setTimeout(() => window.nextItem(), 1000);
+              } else {
+                  btn.style.background = '#FFE9EB';
+                  btn.style.borderColor = '#FFC1C8';
+                  speak('Oops, try again!');
+                  setTimeout(() => {
+                      btn.style.background = '#fff';
+                      btn.style.borderColor = '#EEF0FB';
+                      cont.querySelectorAll('.btn-secondary').forEach(b => b.disabled = false);
+                  }, 1000);
+              }
+          };
+
+      } else if(APP_STATE.activeModule === 'S') {
+          if(hdrDef) hdrDef.style.display = 'none';
+          const words = item.en.split(' ');
+          let shuffled = [...words].sort(() => Math.random() - 0.5);
+          APP_STATE.selectedParts = [];
+          const fontSizeOpt = words.length > 6 ? '13px' : '16px';
+          const paddingOpt = words.length > 6 ? '8px 14px' : '12px 18px';
+
+          window.renderScrambleBox = () => {
+              const dropItems = APP_STATE.selectedParts.map((w, i) => {
+                  const d = document.createElement('div');
+                  d.className = 'scramble-btn-item';
+                  d.style.fontSize = fontSizeOpt;
+                  d.style.padding = paddingOpt;
+                  d.innerText = w;
+                  return d.outerHTML;
+              }).join('');
+
+              const wordItems = shuffled.map((w, i) => {
+                  const d = document.createElement('div');
+                  d.className = 'scramble-btn-item';
+                  d.style.fontSize = fontSizeOpt;
+                  d.style.padding = paddingOpt;
+                  d.innerText = w;
+                  return d.outerHTML;
+              }).join('');
+
+              const placeholder = APP_STATE.selectedParts.length === 0
+                  ? '<span style="color:#A9AECB; font-style:italic; font-weight:700; font-size:13px;">(Klik kata di bawah untuk menyusun)</span>'
+                  : '';
+
+              cont.innerHTML =
+                  '<div class="scramble-header-card"><h2>SUSUN KATA 🧩</h2></div>' +
+                  '<div style="margin-bottom:10px; font-weight:800; color:var(--ink-soft); font-size:14px;">Susun kata-kata di bawah ini:</div>' +
+                  '<div class="scramble-target-card">' + item.id + '</div>' +
+                  '<div class="scramble-drop-zone">' + placeholder + dropItems + '</div>' +
+                  '<div style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-bottom:20px;">' + wordItems + '</div>' +
+                  '<button class="btn-primary sun" id="btn-cek-susun">CEK JAWABAN ✔️</button>';
+
+              const cekBtn = document.getElementById('btn-cek-susun');
+              if(cekBtn) cekBtn.onclick = () => window.checkScramble(item.en, cekBtn);
+
+              cont.querySelectorAll('.scramble-drop-zone .scramble-btn-item').forEach((el, i) => {
+                  el.onclick = () => window.unselectScramble(i);
+              });
+              const wordContainer = cont.querySelectorAll('div[style*="flex-wrap"] .scramble-btn-item');
+              wordContainer.forEach((el, i) => { el.onclick = () => window.selectScramble(i); });
+          };
+
+          window.selectScramble = (idx) => {
+              if(idx >= 0 && idx < shuffled.length) {
+                  APP_STATE.selectedParts.push(shuffled.splice(idx, 1)[0]);
+                  window.renderScrambleBox();
+              }
+          };
+          window.unselectScramble = (idx) => {
+              if(idx >= 0 && idx < APP_STATE.selectedParts.length) {
+                  shuffled.push(APP_STATE.selectedParts.splice(idx, 1)[0]);
+                  window.renderScrambleBox();
+              }
+          };
+          window.checkScramble = (correctAns, btn) => {
+              if(APP_STATE.selectedParts.join(' ') === correctAns) {
+                  btn.style.background = 'var(--grad-mint)';
+                  btn.innerText = 'BENAR! 🎉';
+                  speak('Excellent!');
+                  APP_STATE.score += 15;
+                  if(scoreEl) scoreEl.innerText = APP_STATE.score;
+                  setTimeout(() => window.nextItem(), 1000);
+              } else {
+                  btn.style.background = 'var(--grad-coral)';
+                  btn.innerText = 'SALAH! ❌';
+                  speak('Try again!');
+                  setTimeout(() => {
+                      btn.style.background = '';
+                      btn.innerText = 'CEK JAWABAN ✔️';
+                  }, 1000);
+              }
+          };
+          window.renderScrambleBox();
+
+      } else if(APP_STATE.activeModule === 'C') {
+          if(hdrDef) hdrDef.style.display = 'none';
+          cont.innerHTML = `
+            <div class="scramble-header-card" style="background:var(--grad-mint); color:#fff; box-shadow:0 10px 24px rgba(43,184,218,.35);">
+                <h2 style="font-size:20px; margin:0;">Ngobrol Bareng Buddy 🦊</h2>
+                <p style="font-size:13px; font-weight:800; margin:2px 0 0; opacity:.9;">Guru Bahasa Inggrismu</p>
             </div>
-            <h3 class="font-black text-gray-900 text-xl mb-2">Hapus Seluruh Data?</h3>
-            <p class="text-sm text-gray-500 mb-6 text-center leading-relaxed">Tindakan ini akan menghapus <b>seluruh rekaman pengiriman</b> di bank data secara permanen. Ketik <span class="text-red-600 font-black">reset</span> di bawah untuk melanjutkan.</p>
-            <input type="text" id="reset-confirm-input" placeholder="Ketik 'reset' di sini" class="w-full text-center p-4 border-2 border-gray-100 rounded-2xl mb-6 focus:border-red-500 outline-none font-bold">
-            <div class="flex gap-3">
-                <button onclick="toggleResetModal(false)" class="flex-1 py-3 text-gray-500 font-bold hover:bg-gray-50 rounded-xl transition-colors">Batal</button>
-                <button onclick="executeFullReset()" class="flex-1 py-3 bg-red-600 text-white rounded-xl font-bold shadow-lg shadow-red-100 hover:bg-red-700 transition-all">Hapus Semua</button>
+            <div id="chat-history" style="width:100%; height:380px; background:#fff; border-radius:24px; box-shadow:var(--shadow-soft); padding:15px; overflow-y:auto; display:flex; flex-direction:column; gap:12px; margin-bottom:14px;">
             </div>
-        </div>
-    </div>
+            <div style="display:flex; width:100%; gap:10px;">
+                <input type="text" id="chat-input" placeholder="Ketik curhat belajarmu di sini..." style="flex-grow:1; margin:0; border-radius:999px;">
+                <button id="btn-send-chat" class="btn-primary" style="margin:0; width:auto; padding:0 22px; min-height:56px; border-radius:999px;">➤</button>
+            </div>
+          `;
 
-    <script>
-        const SUPABASE_URL = "https://cdvpmtnjkqjzruffsoyz.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNkdnBtdG5qa3FqenJ1ZmZzb3l6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkzNDI1MDYsImV4cCI6MjA4NDkxODUwNn0.tDa9YhKMpV7wzBiOjdjgHiWii59UTZHW2Chb9O6JKwU";
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+          const chatHistory = getEl('chat-history');
+          const chatInput = getEl('chat-input');
+          const btnSend = getEl('btn-send-chat');
 
-        let state = {
-            view: 'login',
-            user: null,
-            shipments: [],
-            settings: [],
-            showCommission: false,
-            dateRange: {
-                start: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0],
-                end: new Date().toISOString().split('T')[0]
-            },
-            inputRows: [{ expedition: '', count: '' }],
-            charts: { line: null, pie: null }
-        };
+          let chatMessages = [
+              { role: "user", parts: [{ text: `Kamu adalah 'Buddy', seekor rubah yang merupakan guru bahasa Inggris profesional, ramah, dan sangat ahli untuk anak-anak SD kelas 1-6 (muridmu bernama ${PROGRESS.childName || 'Teman'}, kelas ${toKelas(PROGRESS.currentLevel)} SD). Kamu sedang menerima konsultasi belajar bahasa Inggris dari muridmu dengan topik '${APP_STATE.currentTopic || 'Umum'}'. Jawablah dengan bahasa Indonesia yang sangat ramah, suportif, dan mudah dipahami anak-anak, sambil sesekali mencampur kosakata bahasa Inggris untuk mengajar. Berikan solusi dan semangat jika mereka curhat soal kendala belajarnya. Jangan terlalu panjang, maksimal 2-3 kalimat pendek.` }]},
+              { role: "model", parts: [{ text: `Halo ${PROGRESS.childName || 'Teman'}! Aku Buddy 🦊, guru Bahasa Inggrismu. Ada kesulitan belajar atau mau cerita apa hari ini? *Don't be shy*, jangan malu ya!` }]}
+          ];
 
-        const OWNER_PIN = "131313";
+          const appendMessage = (sender, text) => {
+              const isBuddy = sender === 'Buddy';
+              const msgDiv = document.createElement('div');
+              msgDiv.style.maxWidth = '85%';
+              msgDiv.style.padding = '12px 16px';
+              msgDiv.style.borderRadius = '18px';
+              msgDiv.style.fontWeight = '800';
+              msgDiv.style.fontSize = '14.5px';
+              msgDiv.style.lineHeight = '1.45';
+              msgDiv.style.boxShadow = '0 4px 12px rgba(90,100,200,.1)';
 
-        window.addEventListener('load', async () => {
-            lucide.createIcons();
-            await checkAuth();
-            await loadData();
-            showView(state.user ? 'dashboard' : 'login');
-        });
+              if (isBuddy) {
+                  msgDiv.style.alignSelf = 'flex-start';
+                  msgDiv.style.background = '#F2F4FF';
+                  msgDiv.style.borderBottomLeftRadius = '4px';
+                  msgDiv.innerHTML = "<b>🦊 Buddy:</b><br>" + text.replace(/\n/g, '<br>');
+              } else {
+                  msgDiv.style.alignSelf = 'flex-end';
+                  msgDiv.style.background = 'var(--grad-primary)';
+                  msgDiv.style.color = '#fff';
+                  msgDiv.style.borderBottomRightRadius = '4px';
+                  msgDiv.innerHTML = "<b>👦 " + (PROGRESS.childName || 'Kamu') + ":</b><br>" + text.replace(/\n/g, '<br>');
+              }
 
-        async function checkAuth() {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            state.user = session?.user || null;
-            updateNavbar();
-        }
+              chatHistory.appendChild(msgDiv);
+              chatHistory.scrollTop = chatHistory.scrollHeight;
+          };
 
-        async function loadData() {
-            const { data: shipData } = await supabaseClient.from('shipments').select('*').order('tanggal', { ascending: false });
-            const { data: settingsData } = await supabaseClient.from('settings').select('*');
-            if (shipData) state.shipments = shipData;
-            if (settingsData) state.settings = settingsData;
-            
-            if (state.view === 'dashboard') renderDashboard();
-            if (state.view === 'settings') renderSettings();
-            if (state.view === 'analytics') renderAnalytics();
-        }
+          appendMessage('Buddy', chatMessages[1].parts[0].text);
 
-        function showView(viewName) {
-            state.view = viewName;
-            const content = document.getElementById('app-content');
-            updateNavbar();
+          const handleSend = async () => {
+              const userText = chatInput.value.trim();
+              if (!userText) return;
 
-            if (viewName === 'login') {
-                content.innerHTML = renderLogin();
-            } else if (viewName === 'dashboard') {
-                renderDashboard();
-            } else if (viewName === 'settings') {
-                renderSettings();
-            } else if (viewName === 'analytics') {
-                renderAnalytics();
-            }
-            lucide.createIcons();
-        }
+              appendMessage('User', userText);
+              chatInput.value = '';
+              btnSend.disabled = true;
+              btnSend.innerHTML = '⏳';
 
-        function updateNavbar() {
-            const nav = document.getElementById('nav-actions');
-            if (!state.user) {
-                nav.innerHTML = '';
-            } else {
-                nav.innerHTML = `
-                    <div class="flex items-center gap-2">
-                        <button onclick="showView('dashboard')" title="Dashboard" class="p-2 rounded-lg ${state.view === 'dashboard' ? 'tab-active' : 'text-gray-500 hover:bg-gray-50'}"><i data-lucide="layout-dashboard"></i></button>
-                        <button onclick="showView('analytics')" title="Analisa Statistik" class="p-2 rounded-lg ${state.view === 'analytics' ? 'tab-active' : 'text-gray-500 hover:bg-gray-50'}"><i data-lucide="bar-chart-3"></i></button>
-                        <button onclick="showView('settings')" title="Pengaturan" class="p-2 rounded-lg ${state.view === 'settings' ? 'tab-active' : 'text-gray-500 hover:bg-gray-50'}"><i data-lucide="settings"></i></button>
-                        <button onclick="handleLogout()" title="Keluar" class="p-2 text-red-500 hover:bg-red-50 rounded-lg"><i data-lucide="log-out"></i></button>
-                    </div>
-                `;
-            }
-            lucide.createIcons();
-        }
+              chatMessages.push({ role: "user", parts: [{ text: userText }] });
 
-        function renderLogin() {
-            return `
-                <div class="max-w-md mx-auto px-4 py-20 text-center">
-                    <div class="bg-white p-10 rounded-[2.5rem] shadow-2xl border border-gray-100">
-                        <div class="bg-blue-600 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-200">
-                            <i data-lucide="shield-check" class="text-white w-8 h-8"></i>
-                        </div>
-                        <h2 class="text-3xl font-bold text-gray-900 mb-8">Admin Login</h2>
-                        <input type="email" id="login-email" placeholder="Email" class="w-full p-4 border rounded-2xl mb-4 focus:ring-2 focus:ring-blue-500 outline-none">
-                        <input type="password" id="login-password" placeholder="Password" class="w-full p-4 border rounded-2xl mb-6 focus:ring-2 focus:ring-blue-500 outline-none">
-                        <button onclick="handleLogin()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-xl shadow-blue-100 transition-all active:scale-95">Masuk Dashboard</button>
-                    </div>
-                </div>
-            `;
-        }
+              const loadingDiv = document.createElement('div');
+              loadingDiv.id = 'chat-loading';
+              loadingDiv.style.cssText = 'align-self:flex-start; font-weight:800; font-size:13px; color:#A9AECB; font-style:italic;';
+              loadingDiv.innerText = 'Buddy sedang berpikir... 🦊💭';
+              chatHistory.appendChild(loadingDiv);
+              chatHistory.scrollTop = chatHistory.scrollHeight;
 
-        function renderDashboard() {
-            const filtered = state.shipments.filter(s => s.tanggal >= state.dateRange.start && s.tanggal <= state.dateRange.end);
-            const totalShipments = filtered.reduce((acc, curr) => acc + (Number(curr.poin) || 0), 0);
-            const totalCommission = filtered.reduce((acc, curr) => acc + (Number(curr.komisi) || 0), 0);
+              try {
+                  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${GEMINI_API_KEY}`;
 
-            const content = document.getElementById('app-content');
-            content.innerHTML = `
-                <div class="max-w-7xl mx-auto px-4 py-8 space-y-8 animate-in fade-in duration-500">
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                        <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Dashboard Admin</h1>
-                        <div class="bg-white p-2 rounded-2xl border shadow-sm flex items-center gap-2">
-                             <input type="date" id="input-date" value="${new Date().toISOString().split('T')[0]}" class="px-4 py-2 bg-gray-50 rounded-xl font-bold text-gray-700 outline-none">
-                        </div>
-                    </div>
+                  const payload = { contents: chatMessages };
+                  let response = null;
+                  let retries = 5;
+                  let delay = 1000;
 
-                    <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100">
-                        <div class="flex justify-between items-center mb-6">
-                            <h3 class="font-black text-gray-800 text-lg flex items-center gap-2"><i data-lucide="plus-circle" class="text-blue-600"></i> Input Data Pengiriman</h3>
-                            <button onclick="addInputRow()" class="text-blue-600 font-bold flex items-center gap-1 text-sm hover:underline"><i data-lucide="plus" class="w-4 h-4"></i> Tambah Baris</button>
-                        </div>
-                        <div class="overflow-x-auto mb-6">
-                            <table class="w-full text-left border-collapse">
-                                <thead class="text-[10px] font-black uppercase text-gray-400 tracking-widest border-b">
-                                    <tr>
-                                        <th class="py-3 px-2">Nama Ekspedisi</th>
-                                        <th class="py-3 px-2">Jumlah Paket</th>
-                                        <th class="py-3 px-2 text-right">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="input-table-body" class="divide-y">
-                                    ${state.inputRows.map((row, index) => `
-                                        <tr>
-                                            <td class="py-4 px-2">
-                                                <select onchange="updateInputRow(${index}, 'expedition', this.value)" class="w-full p-3 bg-gray-50 rounded-xl border-none font-bold text-gray-700 focus:ring-2 focus:ring-blue-500 outline-none">
-                                                    <option value="">Pilih Ekspedisi...</option>
-                                                    ${state.settings.map(s => `<option value="${s.name}" ${row.expedition === s.name ? 'selected' : ''}>${s.name.toUpperCase()}</option>`).join('')}
-                                                </select>
-                                            </td>
-                                            <td class="py-4 px-2">
-                                                <input type="number" value="${row.count}" oninput="updateInputRow(${index}, 'count', this.value)" placeholder="0" class="w-full p-3 bg-gray-50 rounded-xl border-none font-bold text-gray-700 focus:ring-2 focus:ring-blue-500 outline-none">
-                                            </td>
-                                            <td class="py-4 px-2 text-right">
-                                                <button onclick="removeInputRow(${index})" class="p-2 text-red-400 hover:text-red-600"><i data-lucide="x" class="w-5 h-5"></i></button>
-                                            </td>
-                                        </tr>
-                                    `).join('')}
-                                </tbody>
-                            </table>
-                        </div>
-                        <button onclick="submitInputData()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black shadow-xl shadow-blue-100 hover:bg-blue-700 transition-all active:scale-[0.99]">Simpan ke Bank Data</button>
-                    </div>
+                  for(let i=0; i<retries; i++) {
+                      try {
+                          const res = await fetch(url, {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify(payload)
+                          });
+                          if(!res.ok) throw new Error('API Error');
+                          response = await res.json();
+                          break;
+                      } catch(e) {
+                          if(i === retries - 1) throw e;
+                          await new Promise(r => setTimeout(r, delay));
+                          delay *= 2;
+                      }
+                  }
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 flex items-center justify-between overflow-hidden relative">
-                            <div class="flex items-center gap-6 relative z-10">
-                                <div class="bg-green-100 p-5 rounded-3xl text-green-600 transition-transform relative"><i data-lucide="banknote" class="w-10 h-10"></i></div>
-                                <div>
-                                    <p class="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Total Komisi</p>
-                                    <p class="text-4xl font-black ${state.showCommission ? 'text-gray-900' : 'text-gray-200'}">
-                                        ${state.showCommission ? 'Rp ' + totalCommission.toLocaleString('id-ID') : 'Rp ••••••••'}
-                                    </p>
-                                </div>
-                            </div>
-                            <button onclick="${state.showCommission ? 'toggleCommission(false)' : 'togglePinModal(true)'}" class="p-4 rounded-2xl bg-gray-50 text-gray-400 z-10 hover:bg-gray-100 transition-colors">
-                                <i data-lucide="${state.showCommission ? 'eye-off' : 'lock'}"></i>
-                            </button>
-                            <div class="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-green-50 rounded-full opacity-30"></div>
-                        </div>
-                        
-                        <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 flex items-center gap-6 overflow-hidden relative group">
-                            <div class="bg-blue-100 p-5 rounded-3xl text-blue-600 transition-transform relative z-10"><i data-lucide="package" class="w-10 h-10"></i></div>
-                            <div class="relative z-10">
-                                <p class="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Total Kiriman</p>
-                                <p class="text-4xl font-black text-gray-900">${totalShipments.toLocaleString('id-ID')} <span class="text-lg font-bold text-gray-300">Paket</span></p>
-                            </div>
-                            <div class="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-blue-50 rounded-full opacity-30"></div>
-                        </div>
-                    </div>
+                  if(response && response.candidates && response.candidates[0].content) {
+                      const buddyReply = response.candidates[0].content.parts[0].text;
+                      chatMessages.push({ role: "model", parts: [{ text: buddyReply }] });
 
-                    <div class="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden">
-                        <div class="p-8 border-b border-gray-50 flex flex-col md:flex-row justify-between items-center bg-gray-50/20 gap-4">
-                            <h3 class="font-black text-gray-900 text-xl text-center md:text-left">Bank Data Rekapitulasi</h3>
-                            <div class="flex items-center gap-4 bg-white p-2 rounded-2xl border shadow-sm">
-                                <input type="date" value="${state.dateRange.start}" onchange="updateDateRange('start', this.value)" class="bg-transparent px-2 font-bold text-xs text-gray-600 outline-none">
-                                <span class="text-gray-300 font-bold">s/d</span>
-                                <input type="date" value="${state.dateRange.end}" onchange="updateDateRange('end', this.value)" class="bg-transparent px-2 font-bold text-xs text-gray-600 outline-none">
-                            </div>
-                        </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left text-sm">
-                                <thead class="bg-gray-50/50 text-gray-400 font-black uppercase text-[10px] tracking-[0.2em] border-b">
-                                    <tr>
-                                        <th class="px-8 py-5">Tanggal</th>
-                                        <th class="px-8 py-5">Ekspedisi</th>
-                                        <th class="px-8 py-5 text-right">Jumlah</th>
-                                        <th class="px-8 py-5 text-right">Komisi</th>
-                                        <th class="px-8 py-5 text-right">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-gray-50">
-                                    ${filtered.map(item => `
-                                        <tr class="hover:bg-blue-50/20 transition-colors group">
-                                            <td class="px-8 py-5 text-gray-500 font-bold">${new Date(item.tanggal).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
-                                            <td class="px-8 py-5 font-black uppercase text-[11px] tracking-wide text-gray-700">${item.nama_ekspedisi}</td>
-                                            <td class="px-8 py-5 text-right"><span class="bg-blue-600 text-white px-3 py-1 rounded-full font-black text-[10px]">${item.poin} Pkt</span></td>
-                                            <td class="px-8 py-5 text-right font-black ${state.showCommission ? 'text-green-600' : 'text-gray-200 tracking-tighter'}">${state.showCommission ? 'Rp ' + Number(item.komisi).toLocaleString('id-ID') : '••••••'}</td>
-                                            <td class="px-8 py-5 text-right">
-                                                <button onclick="confirmDeleteEntry('${item.id}')" class="p-2 text-red-300 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-all"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                                            </td>
-                                        </tr>
-                                    `).join('') || '<tr><td colspan="5" class="p-20 text-center text-gray-400 font-medium italic">Belum ada data rekaman</td></tr>'}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            `;
-            lucide.createIcons();
-        }
+                      const loadEl = getEl('chat-loading');
+                      if(loadEl) loadEl.remove();
 
-        // --- View Analisa Statistik ---
-        function renderAnalytics() {
-            const filtered = state.shipments.filter(s => s.tanggal >= state.dateRange.start && s.tanggal <= state.dateRange.end);
-            
-            const content = document.getElementById('app-content');
-            content.innerHTML = `
-                <div class="max-w-7xl mx-auto px-4 py-8 space-y-8 animate-in fade-in duration-500">
-                    <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                        <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Analisa Statistik</h1>
-                        <div class="flex items-center gap-4 bg-white p-2 rounded-2xl border shadow-sm">
-                            <input type="date" value="${state.dateRange.start}" onchange="updateDateRange('start', this.value)" class="bg-transparent px-2 font-bold text-xs text-gray-600 outline-none">
-                            <span class="text-gray-300 font-bold">s/d</span>
-                            <input type="date" value="${state.dateRange.end}" onchange="updateDateRange('end', this.value)" class="bg-transparent px-2 font-bold text-xs text-gray-600 outline-none">
-                        </div>
-                    </div>
+                      appendMessage('Buddy', buddyReply);
+                  } else {
+                      throw new Error('Format response salah');
+                  }
+              } catch (error) {
+                  const loadEl = getEl('chat-loading');
+                  if(loadEl) loadEl.remove();
+                  window.customAlert('🦊🔌', 'Maaf ya, koneksi Buddy sedang terganggu.<br><span style="font-size:15px;">Coba kirim pesan lagi!</span>');
+              } finally {
+                  btnSend.disabled = false;
+                  btnSend.innerHTML = '➤';
+                  chatInput.focus();
+              }
+          };
 
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <div class="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm">
-                            <h3 class="font-black text-gray-800 text-lg mb-6 flex items-center gap-2"><i data-lucide="trending-up" class="text-blue-600"></i> Tren Pengiriman Harian</h3>
-                            <div class="h-64 relative">
-                                <canvas id="growthChart"></canvas>
-                            </div>
-                        </div>
+          btnSend.onclick = handleSend;
+          chatInput.onkeypress = (e) => { if(e.key === 'Enter') handleSend(); };
+      }
+  }
 
-                        <div class="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm">
-                            <h3 class="font-black text-gray-800 text-lg mb-6 flex items-center gap-2"><i data-lucide="pie-chart" class="text-purple-600"></i> Distribusi Ekspedisi</h3>
-                            <div class="h-64 relative">
-                                <canvas id="distChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
+  window.nextItem = () => {
+      APP_STATE.currentIndex++;
+      if(APP_STATE.currentIndex >= APP_STATE.items.length) {
+          const progEl = getEl('module-progress');
+          if(progEl) progEl.style.width = '100%';
 
-                    <!-- Laporan Analisa Kenaikan/Penurunan (Baru) -->
-                    <div class="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm">
-                        <h3 class="font-black text-gray-800 text-lg mb-6 flex items-center gap-2"><i data-lucide="trending-up" class="text-blue-600"></i> Analisa Perubahan Volume Per Ekspedisi</h3>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left text-sm">
-                                <thead class="bg-gray-50/50 text-gray-400 font-black uppercase text-[10px] tracking-widest border-b">
-                                    <tr>
-                                        <th class="px-6 py-4">Ekspedisi</th>
-                                        <th class="px-6 py-4 text-center">Periode Awal</th>
-                                        <th class="px-6 py-4 text-center">Periode Akhir</th>
-                                        <th class="px-6 py-4 text-center">Perubahan</th>
-                                        <th class="px-6 py-4 text-right">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="growth-table-body" class="divide-y divide-gray-50">
-                                    <!-- Diisi oleh JS -->
-                                </tbody>
-                            </table>
-                        </div>
-                        <div id="analysis-insights" class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-                            <!-- Ringkasan analisa -->
-                        </div>
-                    </div>
-                </div>
-            `;
-            lucide.createIcons();
-            initAnalyticsCharts(filtered);
-        }
+          PROGRESS.totalPoints += 50; saveProgress();
+          launchConfetti();
 
-        function initAnalyticsCharts(data) {
-            // Urutkan data berdasarkan tanggal
-            const sortedData = [...data].sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal));
-            
-            // 1. Logika Grafik Garis (Tren Harian)
-            const dateGroups = {};
-            sortedData.forEach(s => {
-                dateGroups[s.tanggal] = (dateGroups[s.tanggal] || 0) + Number(s.poin);
-            });
-            const sortedDates = Object.keys(dateGroups).sort();
-            const dateLabels = sortedDates.map(d => new Date(d).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' }));
-            const dateValues = sortedDates.map(d => dateGroups[d]);
+          window.customAlert('🎉', 'MISI SELESAI!<br><span style="font-size:17px; font-weight:normal;">Kamu dapat +50 Bintang! ⭐</span>', () => {
+              showScreen('screen-category');
+          });
+      } else renderGameItem();
+  };
 
-            // 2. Logika Grafik Pie (Distribusi)
-            const expGroups = {};
-            data.forEach(s => {
-                expGroups[s.nama_ekspedisi] = (expGroups[s.nama_ekspedisi] || 0) + Number(s.poin);
-            });
-            const expLabels = Object.keys(expGroups);
-            const expValues = Object.values(expGroups);
+  // ================= NAVIGASI =================
+  bind('btn-menu-ah', 'click', () => renderAH('huruf'));
+  bind('tab-huruf', 'click', () => renderAH('huruf'));
+  bind('tab-angka', 'click', () => renderAH('angka'));
+  bind('btn-menu-misi', 'click', renderMisiDashboard);
+  bind('btn-menu-games', 'click', () => showScreen('screen-games-menu'));
+  bind('btn-menu-chat', 'click', () => window.openCategory('C'));
 
-            // 3. Analisa Kenaikan/Penurunan per Ekspedisi
-            // Bagi data menjadi 2 bagian waktu (awal dan akhir periode)
-            const uniqueDates = sortedDates;
-            const midIndex = Math.ceil(uniqueDates.length / 2);
-            const firstHalfDates = uniqueDates.slice(0, midIndex);
-            const secondHalfDates = uniqueDates.slice(midIndex);
+  bind('btn-menu-kamus', 'click', () => {
+      showScreen('screen-dictionary');
+      getEl('dict-search-input').value = '';
+      getEl('dict-filter-select').value = 'All';
+      window.renderDictionary();
+  });
 
-            const growthTableBody = document.getElementById('growth-table-body');
-            const allExpeditions = state.settings.map(s => s.name);
-            let growthRowsHtml = '';
+  bind('dict-search-input', 'input', window.renderDictionary);
+  bind('dict-filter-select', 'change', window.renderDictionary);
 
-            allExpeditions.forEach(expName => {
-                const totalFirst = sortedData
-                    .filter(s => s.nama_ekspedisi === expName && firstHalfDates.includes(s.tanggal))
-                    .reduce((acc, curr) => acc + Number(curr.poin), 0);
-                
-                const totalSecond = sortedData
-                    .filter(s => s.nama_ekspedisi === expName && secondHalfDates.includes(s.tanggal))
-                    .reduce((acc, curr) => acc + Number(curr.poin), 0);
+  bind('btn-back-dict', 'click', renderMainMenu);
+  bind('btn-back-ah', 'click', renderMainMenu);
+  bind('btn-back-dash', 'click', renderMainMenu);
+  bind('btn-back-games', 'click', renderMainMenu);
 
-                const diff = totalSecond - totalFirst;
-                const percent = totalFirst > 0 ? ((diff / totalFirst) * 100).toFixed(1) : (totalSecond > 0 ? "100" : "0");
-                const isGrowth = diff > 0;
-                const isDown = diff < 0;
+  bind('btn-back-cat', 'click', () => {
+      if(APP_STATE.activeModule === 'C') renderMainMenu();
+      else renderMisiDashboard();
+  });
 
-                growthRowsHtml += `
-                    <tr>
-                        <td class="px-6 py-5 font-black uppercase text-gray-700 tracking-wide text-[11px]">${expName}</td>
-                        <td class="px-6 py-5 text-center font-bold text-gray-500">${totalFirst}</td>
-                        <td class="px-6 py-5 text-center font-bold text-gray-900">${totalSecond}</td>
-                        <td class="px-6 py-5 text-center">
-                            <span class="font-black ${diff >= 0 ? 'text-green-600' : 'text-red-600'} text-xs">
-                                ${diff > 0 ? '+' : ''}${diff} (${percent}%)
-                            </span>
-                        </td>
-                        <td class="px-6 py-5 text-right">
-                            ${isGrowth ? 
-                                '<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-[10px] font-black uppercase flex items-center justify-end gap-1"><i data-lucide="trending-up" class="w-3 h-3"></i> Naik</span>' : 
-                                (isDown ? 
-                                '<span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-[10px] font-black uppercase flex items-center justify-end gap-1"><i data-lucide="trending-down" class="w-3 h-3"></i> Turun</span>' : 
-                                '<span class="bg-gray-100 text-gray-500 px-3 py-1 rounded-full text-[10px] font-black uppercase flex items-center justify-end gap-1">Stabil</span>')}
-                        </td>
-                    </tr>
-                `;
-            });
-            growthTableBody.innerHTML = growthRowsHtml || '<tr><td colspan="5" class="p-10 text-center text-gray-400 italic font-medium">Lengkapi setidaknya 2 hari data untuk melihat analisa tren</td></tr>';
+  bind('btn-back-mod', 'click', () => {
+      if(APP_STATE.activeModule === 'C') renderMainMenu();
+      else renderMisiDashboard();
+  });
 
-            // 4. Laporan Insight
-            const totalPackets = data.reduce((a, b) => a + Number(b.poin), 0);
-            const topExp = expLabels.length > 0 ? expLabels.reduce((a, b) => expGroups[a] > expGroups[b] ? a : b) : "-";
-            const avgDaily = dateLabels.length > 0 ? (totalPackets / dateLabels.length).toFixed(1) : 0;
+  bind('btn-stop-game', 'click', () => { clearInterval(GameEngine.timerInt); clearInterval(GameEngine.spawnInt); GameEngine.active = null; showScreen('screen-games-menu'); });
 
-            const insightsArea = document.getElementById('analysis-insights');
-            insightsArea.innerHTML = `
-                <div class="p-6 bg-blue-50 rounded-[2rem] border border-blue-100">
-                    <p class="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-2">Market Leader</p>
-                    <p class="text-sm text-gray-700 leading-relaxed font-semibold">Ekspedisi <b class="text-blue-600 uppercase underline decoration-2">${topExp}</b> memimpin pengiriman dengan volume <b class="text-blue-600">${expGroups[topExp] || 0} paket</b>.</p>
-                </div>
-                <div class="p-6 bg-indigo-50 rounded-[2rem] border border-indigo-100">
-                    <p class="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-2">Volume Harian</p>
-                    <p class="text-sm text-gray-700 leading-relaxed font-semibold">Tercatat rata-rata pengiriman sebanyak <b class="text-indigo-600">${avgDaily} paket per hari</b> dalam rentang waktu terpilih.</p>
-                </div>
-                <div class="p-6 bg-purple-50 rounded-[2rem] border border-purple-100">
-                    <p class="text-[10px] font-black text-purple-400 uppercase tracking-widest mb-2">Efisiensi</p>
-                    <p class="text-sm text-gray-700 leading-relaxed font-semibold">Terdapat <b class="text-purple-600">${expLabels.length} ekspedisi aktif</b> yang melayani operasional Uberpaket pada periode ini.</p>
-                </div>
-            `;
-
-            // Setup Charts
-            if (state.charts.line) state.charts.line.destroy();
-            if (state.charts.pie) state.charts.pie.destroy();
-
-            const ctxLine = document.getElementById('growthChart').getContext('2d');
-            state.charts.line = new Chart(ctxLine, {
-                type: 'line',
-                data: {
-                    labels: dateLabels,
-                    datasets: [{
-                        label: 'Paket',
-                        data: dateValues,
-                        borderColor: '#2563eb',
-                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
-                        fill: true,
-                        tension: 0.4,
-                        borderWidth: 3,
-                        pointRadius: 4,
-                        pointBackgroundColor: '#fff'
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
-            });
-
-            const ctxPie = document.getElementById('distChart').getContext('2d');
-            state.charts.pie = new Chart(ctxPie, {
-                type: 'doughnut',
-                data: {
-                    labels: expLabels.map(l => l.toUpperCase()),
-                    datasets: [{
-                        data: expValues,
-                        backgroundColor: ['#2563eb', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#6366f1'],
-                        borderWidth: 0
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20, font: { weight: 'bold', size: 10 } } } }, cutout: '70%' }
-            });
-            
-            lucide.createIcons();
-        }
-
-        function renderSettings() {
-            const content = document.getElementById('app-content');
-            content.innerHTML = `
-                <div class="max-w-4xl mx-auto px-4 py-8 space-y-8 animate-in fade-in duration-500">
-                    <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Pengaturan Komisi</h1>
-                    <div class="grid lg:grid-cols-3 gap-8">
-                        <div class="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm h-fit">
-                            <h3 class="font-black text-gray-800 mb-6 tracking-tight text-center md:text-left">Tambah Ekspedisi</h3>
-                            <input id="set-name" placeholder="Nama Ekspedisi" class="w-full p-4 border rounded-2xl bg-gray-50 mb-4 font-bold outline-none focus:ring-2 focus:ring-blue-500">
-                            <input id="set-rate" type="number" placeholder="Komisi/Paket" class="w-full p-4 border rounded-2xl bg-gray-50 mb-6 font-bold outline-none focus:ring-2 focus:ring-blue-500">
-                            <button onclick="addExpedition()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all active:scale-95">Simpan</button>
-                        </div>
-                        <div class="lg:col-span-2 bg-white rounded-[2.5rem] border border-gray-100 overflow-hidden shadow-sm">
-                            <table class="w-full text-left">
-                                <thead class="bg-gray-50/50 text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] border-b">
-                                    <tr><th class="px-8 py-5">Ekspedisi</th><th class="px-8 py-5 text-right">Tarif</th><th class="px-8 py-5 text-right">Aksi</th></tr>
-                                </thead>
-                                <tbody class="divide-y divide-gray-50">
-                                    ${state.settings.map(c => `
-                                        <tr>
-                                            <td class="px-8 py-5 font-black uppercase text-gray-700 tracking-wide">${c.name}</td>
-                                            <td class="px-8 py-5 text-right text-green-600 font-black">Rp ${Number(c.rate).toLocaleString('id-ID')}</td>
-                                            <td class="px-8 py-5 text-right">
-                                                <button onclick="confirmDeleteSetting('${c.id}', '${c.name}')" class="p-2 text-red-300 hover:text-red-600 transition-colors">
-                                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    `).join('') || '<tr><td colspan="3" class="p-10 text-center text-gray-400 italic">Belum ada daftar ekspedisi</td></tr>'}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="bg-red-50 p-8 rounded-[2.5rem] border-2 border-red-100 shadow-sm mt-12">
-                        <div class="flex flex-col md:flex-row justify-between items-center gap-6">
-                            <div class="text-center md:text-left">
-                                <h3 class="text-red-800 font-black text-xl mb-1">Zona Bahaya</h3>
-                                <p class="text-red-600 text-sm font-medium">Hapus seluruh data bank data secara permanen</p>
-                            </div>
-                            <button onclick="toggleResetModal(true)" class="px-10 py-4 bg-red-600 text-white rounded-2xl font-black shadow-xl shadow-red-100 hover:bg-red-700 transition-all active:scale-95">Kosongkan Bank Data</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-            lucide.createIcons();
-        }
-
-        // --- Fitur Modal & Handler (Sama seperti sebelumnya) ---
-        function toggleConfirmModal(show, title = "", text = "", onConfirm = null) {
-            const modal = document.getElementById('confirm-modal');
-            if (show) {
-                document.getElementById('confirm-title').innerText = title;
-                document.getElementById('confirm-text').innerText = text;
-                const btn = document.getElementById('confirm-execute-btn');
-                btn.onclick = async () => { if (onConfirm) await onConfirm(); toggleConfirmModal(false); };
-                modal.classList.remove('hidden');
-            } else modal.classList.add('hidden');
-            lucide.createIcons();
-        }
-        function showMessage(title, text, type = 'info') {
-            const modal = document.getElementById('msg-modal');
-            document.getElementById('msg-title').innerText = title;
-            document.getElementById('msg-text').innerText = text;
-            const area = document.getElementById('msg-icon-area');
-            area.className = "w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 " + (type === 'error' ? "bg-red-100 text-red-600" : "bg-blue-100 text-blue-600");
-            area.innerHTML = `<i data-lucide="${type === 'error' ? 'alert-circle' : 'info'}"></i>`;
-            modal.classList.remove('hidden');
-            lucide.createIcons();
-        }
-        function closeMsgModal() { document.getElementById('msg-modal').classList.add('hidden'); }
-        function confirmDeleteSetting(id, name) { toggleConfirmModal(true, "Hapus Ekspedisi?", `Hapus "${name.toUpperCase()}" dari daftar?`, async () => { toggleLoader(true, "Menghapus..."); const { error } = await supabaseClient.from('settings').delete().eq('id', id); toggleLoader(false); if (error) showMessage("Gagal", error.message, "error"); else await loadData(); }); }
-        function confirmDeleteEntry(id) { toggleConfirmModal(true, "Hapus Rekaman?", "Tindakan ini akan menghapus rekaman data ini secara permanen.", async () => { toggleLoader(true, "Menghapus..."); const { error } = await supabaseClient.from('shipments').delete().eq('id', id); toggleLoader(false); if (error) showMessage("Gagal", error.message, "error"); else await loadData(); }); }
-        function addInputRow() { state.inputRows.push({ expedition: '', count: '' }); renderDashboard(); }
-        function removeInputRow(index) { if (state.inputRows.length > 1) { state.inputRows.splice(index, 1); renderDashboard(); } }
-        function updateInputRow(index, field, value) { state.inputRows[index][field] = value; }
-        async function submitInputData() {
-            const date = document.getElementById('input-date').value;
-            const validData = state.inputRows.filter(r => r.expedition && r.count > 0);
-            if (validData.length === 0) return showMessage("Peringatan", "Harap isi setidaknya satu baris data yang valid.");
-            toggleLoader(true, "Menyimpan data...");
-            const toInsert = validData.map(row => {
-                const rate = state.settings.find(s => s.name === row.expedition)?.rate || 0;
-                return { nama_ekspedisi: row.expedition, poin: parseInt(row.count), komisi: Number(rate) * parseInt(row.count), tanggal: date, nama_pengirim: "-", no_resi: `INPUT-${Date.now()}` };
-            });
-            const { error } = await supabaseClient.from('shipments').insert(toInsert);
-            toggleLoader(false);
-            if (error) showMessage("Kesalahan", error.message, "error");
-            else { state.inputRows = [{ expedition: '', count: '' }]; await loadData(); showMessage("Berhasil", "Data telah disimpan."); }
-        }
-        function toggleResetModal(show) { const modal = document.getElementById('reset-modal'); modal.classList.toggle('hidden', !show); if (show) { document.getElementById('reset-confirm-input').value = ''; document.getElementById('reset-confirm-input').focus(); } lucide.createIcons(); }
-        async function executeFullReset() {
-            const input = document.getElementById('reset-confirm-input').value.trim().toLowerCase();
-            if (input !== 'reset') return showMessage("Gagal", "Ketik kata 'reset' untuk konfirmasi.");
-            toggleLoader(true, "Mereset data...");
-            const { error } = await supabaseClient.from('shipments').delete().filter('id', 'neq', '00000000-0000-0000-0000-000000000000');
-            toggleLoader(false);
-            if (error) showMessage("Kesalahan", error.message, "error");
-            else { toggleResetModal(false); await loadData(); showMessage("Berhasil", "Bank data dikosongkan."); }
-        }
-        async function handleLogin() {
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-            if(!email || !password) return showMessage("Peringatan", "Isi email dan password.");
-            toggleLoader(true, "Autentikasi...");
-            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-            toggleLoader(false);
-            if (error) showMessage("Login Gagal", error.message, "error"); else { state.user = data.user; showView('dashboard'); }
-        }
-        async function handleLogout() { await supabaseClient.auth.signOut(); state.user = null; state.showCommission = false; showView('login'); }
-        function togglePinModal(show) { document.getElementById('pin-modal').classList.toggle('hidden', !show); if(show) document.getElementById('pin-input').focus(); }
-        function verifyOwnerPin() { if (document.getElementById('pin-input').value === OWNER_PIN) { state.showCommission = true; togglePinModal(false); showView(state.view); } else { showMessage("Gagal", "PIN salah.", "error"); document.getElementById('pin-input').value = ''; } }
-        function toggleCommission(show) { state.showCommission = show; showView(state.view); }
-        function updateDateRange(key, val) { state.dateRange[key] = val; showView(state.view); }
-        async function addExpedition() {
-            const name = document.getElementById('set-name').value.toLowerCase().trim();
-            const rate = document.getElementById('set-rate').value;
-            if(!name || !rate) return showMessage("Peringatan", "Harap isi semua kolom!");
-            toggleLoader(true, "Menyimpan...");
-            const { error } = await supabaseClient.from('settings').insert([{ name, rate: Number(rate) }]);
-            toggleLoader(false);
-            if(error) showMessage("Kesalahan", error.message, "error");
-            else { await loadData(); showMessage("Berhasil", `Ekspedisi ${name.toUpperCase()} ditambahkan.`); }
-        }
-        function toggleLoader(show, text = "") { document.getElementById('loader-text').innerText = text; document.getElementById('global-loader').classList.toggle('hidden', !show); }
-    </script>
+  bind('btn-open-edit', 'click', () => {
+      getEl('profile-screen-title').innerText = "Edit Profilmu";
+      getEl('btn-back-profile').style.display = "inline-flex";
+      getEl('btn-logout').style.display = "flex";
+      showScreen('screen-profile-setup');
+      setupMascotInit();
+  });
+  bind('btn-back-profile', 'click', renderMainMenu);
+  bind('btn-logout', 'click', () => signOut(auth).then(()=>location.reload()));
+</script>
 </body>
 </html>
