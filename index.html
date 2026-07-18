@@ -3,7 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>BuddySpeak V.5.1 - Hybrid Edition (Supabase + Firebase Materi)</title>
+  <title>GACA V.5.1 - Belajar Bahasa Inggris SD</title>
+
+  <!-- ===== PWA ===== -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#6C63FF">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="GACA">
+  <link rel="apple-touch-icon" href="https://qzqhvfsmennqvhesfjkf.supabase.co/storage/v1/object/public/logo/ChatGPT%20Image%20Jul%2018,%202026,%2006_19_12%20PM%20(1).png">
+  <link rel="icon" type="image/png" href="https://qzqhvfsmennqvhesfjkf.supabase.co/storage/v1/object/public/logo/ChatGPT%20Image%20Jul%2018,%202026,%2006_19_12%20PM%20(1).png">
   <style>
     /* =========================================================
        1. SISTEM DESAIN MODERN "CANDY SOFT UI" UNTUK ANAK SD
@@ -270,11 +280,12 @@
   <div id="screen-splash" class="screen active" style="justify-content: center;">
       <div class="loading-container">
           <div class="anim-bounce" style="width:130px; height:130px; border-radius:38px; background:var(--grad-primary); box-shadow:var(--shadow-pop); display:flex; align-items:center; justify-content:center;">
-              <img src="https://ik.imagekit.io/easylanguage/Easy%20Kit%20Buddy%20Speak/logo%20baru/EL%20KIDS%20(4).png" style="width:90px;" alt="Logo" onerror="this.outerHTML='<span style=&quot;font-size:64px;&quot;>🦊</span>'">
+              <img src="https://qzqhvfsmennqvhesfjkf.supabase.co/storage/v1/object/public/logo/ChatGPT%20Image%20Jul%2018,%202026,%2006_19_12%20PM%20(1).png" style="width:90px;" alt="Logo" onerror="this.outerHTML='<span style=&quot;font-size:64px;&quot;>🦊</span>'">
           </div>
-          <h1 class="title-large" style="margin-top:22px;">BuddySpeak</h1>
+          <h1 class="title-large" style="margin-top:22px;">GACA</h1>
           <p style="font-weight:800; font-size:15px; color:var(--ink-soft); text-align:center;">Belajar Bahasa Inggris Seru<br>untuk Kelas 1–6 SD 🎒</p>
           <button id="btn-start-app" class="btn-primary" style="margin-top:30px; font-size:20px; min-height:66px; max-width:320px;">MULAI SEKARANG 🚀</button>
+          <button id="btn-install-pwa" class="btn-secondary" style="display:none; justify-content:center; max-width:320px; font-size:15px;">📲 PASANG APLIKASI DI HP</button>
           <p style="font-size:12px; font-weight:800; color:var(--ink-soft); margin-top:12px; text-align:center;">*Aplikasi akan meminta izin mikrofon<br>untuk fitur latihan bicara.</p>
       </div>
   </div>
@@ -283,7 +294,7 @@
   <div id="screen-loading" class="screen">
       <div class="loading-container">
           <div class="anim-bounce" style="width:110px; height:110px; border-radius:34px; background:var(--grad-primary); box-shadow:var(--shadow-pop); display:flex; align-items:center; justify-content:center;">
-              <img src="https://ik.imagekit.io/easylanguage/Easy%20Kit%20Buddy%20Speak/logo%20baru/EL%20KIDS%20(4).png" style="width:76px;" alt="Logo" onerror="this.outerHTML='<span style=&quot;font-size:54px;&quot;>🦊</span>'">
+              <img src="https://qzqhvfsmennqvhesfjkf.supabase.co/storage/v1/object/public/logo/ChatGPT%20Image%20Jul%2018,%202026,%2006_19_12%20PM%20(1).png" style="width:76px;" alt="Logo" onerror="this.outerHTML='<span style=&quot;font-size:54px;&quot;>🦊</span>'">
           </div>
           <div class="loading-text-card" id="loading-txt-display">MEMERIKSA SISTEM... 🔍</div>
           <div class="soft-loader-track"><div class="soft-loader-fill"></div></div>
@@ -294,7 +305,7 @@
   <div id="screen-auth" class="screen" style="justify-content: center;">
       <div class="soft-card" style="padding: 34px 24px;">
           <div style="width:96px; height:96px; border-radius:30px; background:var(--grad-sun); box-shadow:0 8px 22px rgba(255,159,69,.35); display:flex; align-items:center; justify-content:center; margin-bottom:18px;">
-              <img src="https://ik.imagekit.io/easylanguage/Easy%20Kit%20Buddy%20Speak/logo%20baru/EL%20KIDS%20(4).png" style="width:66px;" alt="Logo" onerror="this.outerHTML='<span style=&quot;font-size:48px;&quot;>🦊</span>'">
+              <img src="https://qzqhvfsmennqvhesfjkf.supabase.co/storage/v1/object/public/logo/ChatGPT%20Image%20Jul%2018,%202026,%2006_19_12%20PM%20(1).png" style="width:66px;" alt="Logo" onerror="this.outerHTML='<span style=&quot;font-size:48px;&quot;>🦊</span>'">
           </div>
           <h1 class="title-large">Masuk / Daftar</h1>
           <p style="font-weight:800; margin-bottom:20px; color:var(--ink-soft); font-size:14px;">Halo Ayah & Bunda, masukkan email & sandi.<br>Akun baru akan dibuat otomatis. ✨</p>
@@ -309,15 +320,15 @@
       <div class="soft-card" style="flex-grow:1; justify-content:center; margin-bottom:0;">
           <div id="intro-step-1" class="intro-step active-step">
               <div class="anim-bounce" style="width:120px; height:120px; border-radius:36px; background:var(--grad-primary); box-shadow:var(--shadow-pop); display:flex; align-items:center; justify-content:center; margin-bottom:20px;">
-                  <img src="https://ik.imagekit.io/easylanguage/Easy%20Kit%20Buddy%20Speak/logo%20baru/EL%20KIDS%20(4).png" style="width:82px;" alt="Logo" onerror="this.outerHTML='<span style=&quot;font-size:58px;&quot;>🦊</span>'">
+                  <img src="https://qzqhvfsmennqvhesfjkf.supabase.co/storage/v1/object/public/logo/ChatGPT%20Image%20Jul%2018,%202026,%2006_19_12%20PM%20(1).png" style="width:82px;" alt="Logo" onerror="this.outerHTML='<span style=&quot;font-size:58px;&quot;>🦊</span>'">
               </div>
-              <h2 class="title-large">BuddySpeak</h2>
+              <h2 class="title-large">GACA</h2>
               <p style="font-weight:800; font-size:16px; color:var(--ink-soft);">Belajar Bahasa Inggris seru<br>khusus anak SD Kelas 1–6!</p>
           </div>
           <div id="intro-step-2" class="intro-step">
               <div style="font-size:78px; margin-bottom:18px;" class="anim-bounce">🎤</div>
               <h2 class="title-large">Latih Suara</h2>
-              <p style="font-weight:800; font-size:16px; color:var(--ink-soft);">Bicara seperti logat Cambridge<br>dengan AI cerdas Buddy.</p>
+              <p style="font-weight:800; font-size:16px; color:var(--ink-soft);">Bicara seperti logat Cambridge<br>dengan AI cerdas Gaca.</p>
           </div>
           <div id="intro-step-3" class="intro-step">
               <div style="font-size:78px; margin-bottom:18px;" class="anim-bounce">🏆</div>
@@ -341,7 +352,7 @@
       <div class="soft-card" style="padding: 40px 24px;">
           <div style="font-size: 66px; margin-bottom:14px;" class="anim-bounce">🎤🖼️</div>
           <h2 class="title-large" style="font-size: 26px;">Izin Perangkat</h2>
-          <p style="font-weight: 800; font-size: 15px; margin-bottom: 26px; color: var(--ink-soft);">Buddy butuh akses Mikrofon untuk melatih suaramu, dan Penyimpanan untuk menyimpan progres belajarmu.</p>
+          <p style="font-weight: 800; font-size: 15px; margin-bottom: 26px; color: var(--ink-soft);">Gaca butuh akses Mikrofon untuk melatih suaramu, dan Penyimpanan untuk menyimpan progres belajarmu.</p>
           <button id="btn-grant-permission" class="btn-primary mint">BERIKAN IZIN SEKARANG ✅</button>
       </div>
   </div>
@@ -453,7 +464,7 @@
       </div>
       <div class="main-menu-card mm-coral" id="btn-menu-chat" style="grid-column: span 2;">
         <div class="mm-icon anim-float">💬</div>
-        <h3>NGOBROL SAMA BUDDY</h3>
+        <h3>NGOBROL SAMA GACA</h3>
       </div>
     </div>
   </div>
@@ -486,8 +497,8 @@
       </div>
 
       <div class="soft-card" style="background:var(--grad-primary); color:#fff; text-align:left; align-items:flex-start; box-shadow:var(--shadow-pop);">
-          <div style="font-weight:900; font-size:12px; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px; opacity:.85;">BUDDY SAYS:</div>
-          <div style="font-weight:800; font-size:15px; line-height:1.5;" id="buddy-message">Halo teman yang hebat, ayo semangat belajar hari ini! 🌟📚✨</div>
+          <div style="font-weight:900; font-size:12px; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px; opacity:.85;">GACA SAYS:</div>
+          <div style="font-weight:800; font-size:15px; line-height:1.5;" id="gaca-message">Halo teman yang hebat, ayo semangat belajar hari ini! 🌟📚✨</div>
       </div>
 
       <div class="soft-card" style="align-items:stretch; text-align:left;">
@@ -659,7 +670,7 @@
 
   // ================= KONFIGURASI (identik dengan V4.8 agar data lama tetap terpakai) =================
   const firebaseConfig = { apiKey: "AIzaSyCqq_TxdIPAM6mroR2WHfYU8yjBs_C80-A", authDomain: "buddyspeak-3b7d9.firebaseapp.com", projectId: "buddyspeak-3b7d9", storageBucket: "buddyspeak-3b7d9.firebasestorage.app", messagingSenderId: "108845140350", appId: "1:108845140350:web:c3178d5bc448a26bdc8b2f" };
-  const GEMINI_API_KEY = ""; // <-- Isi API key Gemini di sini untuk fitur "Ngobrol Sama Buddy"
+  const GEMINI_API_KEY = ""; // <-- Isi API key Gemini di sini untuk fitur "Ngobrol Sama Gaca"
 
   // SUPABASE = backend user, poin, leaderboard, reward
   const SUPABASE_URL = "https://qzqhvfsmennqvhesfjkf.supabase.co";
@@ -1225,7 +1236,7 @@
           btn.innerText = "BERHASIL ✅";
           CURRENT_USER = signUpData.user;
           lastLoadedUid = signUpData.user.id;
-          window.customAlert('🎉', 'Akun Baru Dibuat!<br><span style="font-size:15px;">Selamat datang di BuddySpeak!</span>', goToIntroAsNewUser);
+          window.customAlert('🎉', 'Akun Baru Dibuat!<br><span style="font-size:15px;">Selamat datang di GACA!</span>', goToIntroAsNewUser);
       } else if (signUpErr && signUpErr.message.toLowerCase().includes('already registered')) {
           // Email sudah terdaftar tapi login tadi gagal -> berarti sandinya salah
           resetBtn();
@@ -1519,7 +1530,7 @@
       getEl('misi-points-val').innerText = PROGRESS.xp;
       getEl('misi-grade-val').innerText = `Kelas ${kelas} SD ⭐`;
       getEl('rapor-num').innerText = kelas;
-      getEl('buddy-message').innerText = `Halo ${PROGRESS.childName || 'Teman'} yang hebat, ayo semangat belajar hari ini supaya kamu jadi bintang kelas ${kelas} yang paling pintar dan membanggakan! 🌟📚✨`;
+      getEl('gaca-message').innerText = `Halo ${PROGRESS.childName || 'Teman'} yang hebat, ayo semangat belajar hari ini supaya kamu jadi bintang kelas ${kelas} yang paling pintar dan membanggakan! 🌟📚✨`;
 
       const listCont = getEl('misi-module-list');
       listCont.innerHTML = `
@@ -1711,7 +1722,7 @@
 
       const titleEl = getEl('module-title');
       if(titleEl) {
-          const moduleNames = {'A': 'KARTU PINTAR', 'B': 'TEBAK KATA', 'S': 'SUSUN KATA', 'E': 'CERITA SERU', 'C': 'NGOBROL SAMA BUDDY'};
+          const moduleNames = {'A': 'KARTU PINTAR', 'B': 'TEBAK KATA', 'S': 'SUSUN KATA', 'E': 'CERITA SERU', 'C': 'NGOBROL SAMA GACA'};
           titleEl.innerText = moduleNames[APP_STATE.activeModule] || 'MODUL';
       }
 
@@ -2052,7 +2063,7 @@
           if(hdrDef) hdrDef.style.display = 'none';
           cont.innerHTML = `
             <div class="scramble-header-card" style="background:var(--grad-mint); color:#fff; box-shadow:0 10px 24px rgba(43,184,218,.35);">
-                <h2 style="font-size:20px; margin:0;">Ngobrol Bareng Buddy 🦊</h2>
+                <h2 style="font-size:20px; margin:0;">Ngobrol Bareng Gaca 🦊</h2>
                 <p style="font-size:13px; font-weight:800; margin:2px 0 0; opacity:.9;">Guru Bahasa Inggrismu</p>
             </div>
             <div id="chat-history" style="width:100%; height:380px; background:#fff; border-radius:24px; box-shadow:var(--shadow-soft); padding:15px; overflow-y:auto; display:flex; flex-direction:column; gap:12px; margin-bottom:14px;">
@@ -2068,12 +2079,12 @@
           const btnSend = getEl('btn-send-chat');
 
           let chatMessages = [
-              { role: "user", parts: [{ text: `Kamu adalah 'Buddy', seekor rubah yang merupakan guru bahasa Inggris profesional, ramah, dan sangat ahli untuk anak-anak SD kelas 1-6 (muridmu bernama ${PROGRESS.childName || 'Teman'}, kelas ${toKelas(PROGRESS.currentLevel)} SD). Kamu sedang menerima konsultasi belajar bahasa Inggris dari muridmu dengan topik '${APP_STATE.currentTopic || 'Umum'}'. Jawablah dengan bahasa Indonesia yang sangat ramah, suportif, dan mudah dipahami anak-anak, sambil sesekali mencampur kosakata bahasa Inggris untuk mengajar. Berikan solusi dan semangat jika mereka curhat soal kendala belajarnya. Jangan terlalu panjang, maksimal 2-3 kalimat pendek.` }]},
-              { role: "model", parts: [{ text: `Halo ${PROGRESS.childName || 'Teman'}! Aku Buddy 🦊, guru Bahasa Inggrismu. Ada kesulitan belajar atau mau cerita apa hari ini? *Don't be shy*, jangan malu ya!` }]}
+              { role: "user", parts: [{ text: `Kamu adalah 'Gaca', guru bahasa Inggris profesional, ramah, dan sangat ahli untuk anak-anak SD kelas 1-6 (muridmu bernama ${PROGRESS.childName || 'Teman'}, kelas ${toKelas(PROGRESS.currentLevel)} SD). Kamu sedang menerima konsultasi belajar bahasa Inggris dari muridmu dengan topik '${APP_STATE.currentTopic || 'Umum'}'. Jawablah dengan bahasa Indonesia yang sangat ramah, suportif, dan mudah dipahami anak-anak, sambil sesekali mencampur kosakata bahasa Inggris untuk mengajar. Berikan solusi dan semangat jika mereka curhat soal kendala belajarnya. Jangan terlalu panjang, maksimal 2-3 kalimat pendek.` }]},
+              { role: "model", parts: [{ text: `Halo ${PROGRESS.childName || 'Teman'}! Aku Gaca 🦊, guru Bahasa Inggrismu. Ada kesulitan belajar atau mau cerita apa hari ini? *Don't be shy*, jangan malu ya!` }]}
           ];
 
           const appendMessage = (sender, text) => {
-              const isBuddy = sender === 'Buddy';
+              const isGaca = sender === 'Gaca';
               const msgDiv = document.createElement('div');
               msgDiv.style.maxWidth = '85%';
               msgDiv.style.padding = '12px 16px';
@@ -2083,11 +2094,11 @@
               msgDiv.style.lineHeight = '1.45';
               msgDiv.style.boxShadow = '0 4px 12px rgba(90,100,200,.1)';
 
-              if (isBuddy) {
+              if (isGaca) {
                   msgDiv.style.alignSelf = 'flex-start';
                   msgDiv.style.background = '#F2F4FF';
                   msgDiv.style.borderBottomLeftRadius = '4px';
-                  msgDiv.innerHTML = "<b>🦊 Buddy:</b><br>" + text.replace(/\n/g, '<br>');
+                  msgDiv.innerHTML = "<b>🦊 Gaca:</b><br>" + text.replace(/\n/g, '<br>');
               } else {
                   msgDiv.style.alignSelf = 'flex-end';
                   msgDiv.style.background = 'var(--grad-primary)';
@@ -2100,7 +2111,7 @@
               chatHistory.scrollTop = chatHistory.scrollHeight;
           };
 
-          appendMessage('Buddy', chatMessages[1].parts[0].text);
+          appendMessage('Gaca', chatMessages[1].parts[0].text);
 
           const handleSend = async () => {
               const userText = chatInput.value.trim();
@@ -2116,7 +2127,7 @@
               const loadingDiv = document.createElement('div');
               loadingDiv.id = 'chat-loading';
               loadingDiv.style.cssText = 'align-self:flex-start; font-weight:800; font-size:13px; color:#A9AECB; font-style:italic;';
-              loadingDiv.innerText = 'Buddy sedang berpikir... 🦊💭';
+              loadingDiv.innerText = 'Gaca sedang berpikir... 🦊💭';
               chatHistory.appendChild(loadingDiv);
               chatHistory.scrollTop = chatHistory.scrollHeight;
 
@@ -2146,20 +2157,20 @@
                   }
 
                   if(response && response.candidates && response.candidates[0].content) {
-                      const buddyReply = response.candidates[0].content.parts[0].text;
-                      chatMessages.push({ role: "model", parts: [{ text: buddyReply }] });
+                      const gacaReply = response.candidates[0].content.parts[0].text;
+                      chatMessages.push({ role: "model", parts: [{ text: gacaReply }] });
 
                       const loadEl = getEl('chat-loading');
                       if(loadEl) loadEl.remove();
 
-                      appendMessage('Buddy', buddyReply);
+                      appendMessage('Gaca', gacaReply);
                   } else {
                       throw new Error('Format response salah');
                   }
               } catch (error) {
                   const loadEl = getEl('chat-loading');
                   if(loadEl) loadEl.remove();
-                  window.customAlert('🦊🔌', 'Maaf ya, koneksi Buddy sedang terganggu.<br><span style="font-size:15px;">Coba kirim pesan lagi!</span>');
+                  window.customAlert('🦊🔌', 'Maaf ya, koneksi Gaca sedang terganggu.<br><span style="font-size:15px;">Coba kirim pesan lagi!</span>');
               } finally {
                   btnSend.disabled = false;
                   btnSend.innerHTML = '➤';
@@ -2514,6 +2525,34 @@
           list.innerHTML = '<div class="soft-card" style="font-weight:800; color:#C62838;">Gagal memuat hadiah. Periksa konfigurasi Supabase.<br><span style="font-size:12px;">' + (e.message || '') + '</span></div>';
       }
   }
+
+  // ================= PWA: SERVICE WORKER + TOMBOL PASANG =================
+  if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js')
+              .then(() => console.log('GACA PWA aktif ✅'))
+              .catch((e) => console.warn('SW gagal terdaftar:', e));
+      });
+  }
+
+  let deferredInstallPrompt = null;
+  window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      const b = getEl('btn-install-pwa');
+      if (b) b.style.display = 'flex';
+  });
+  bind('btn-install-pwa', 'click', async () => {
+      if (!deferredInstallPrompt) return;
+      deferredInstallPrompt.prompt();
+      const { outcome } = await deferredInstallPrompt.userChoice;
+      if (outcome === 'accepted') getEl('btn-install-pwa').style.display = 'none';
+      deferredInstallPrompt = null;
+  });
+  window.addEventListener('appinstalled', () => {
+      const b = getEl('btn-install-pwa');
+      if (b) b.style.display = 'none';
+  });
 
   bind('btn-menu-rank', 'click', () => { LB_SCOPE = 'national'; renderLeaderboard(); });
   bind('btn-menu-reward', 'click', renderRewards);
