@@ -5,7 +5,7 @@
    - Aset CDN (font, firebase sdk, supabase sdk, wilayah emsifa) : cache-first + update di belakang
    - Semua API (Supabase, Firestore, Gemini, Nominatim) : JANGAN di-cache, selalu network
    ============================================================ */
-const CACHE_NAME = 'gaca-v5.1.1';   // NAIKKAN versi ini setiap deploy update!
+const CACHE_NAME = 'gaca-v5.1.2';   // NAIKKAN versi ini setiap deploy update!
 const APP_SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-maskable-512.png'];
 
 // Host yang TIDAK BOLEH di-cache (data dinamis / API)
