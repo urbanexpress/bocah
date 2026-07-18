@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>BuddySpeak V.5.0 - Modern Kids Edition (Kelas 1-6 SD)</title>
+  <title>BuddySpeak V.5.1 - Hybrid Edition (Supabase + Firebase Materi)</title>
   <style>
     /* =========================================================
        1. SISTEM DESAIN MODERN "CANDY SOFT UI" UNTUK ANAK SD
@@ -385,6 +385,14 @@
           <label style="margin-top:15px;">Alamat Lengkap:</label>
           <input type="text" id="setup-address" placeholder="Contoh: Jl. Mawar No. 10">
 
+          <label style="margin-top:15px;">📍 Lokasi Wilayah (untuk Peringkat):</label>
+          <button type="button" id="btn-detect-gps" class="btn-secondary" style="justify-content:center; margin-bottom:8px; min-height:48px; font-size:14px;">📡 DETEKSI OTOMATIS LEWAT GPS</button>
+          <div id="gps-status" style="font-size:12.5px; font-weight:800; color:var(--ink-soft); margin-bottom:8px; text-align:center; min-height:16px;"></div>
+          <select id="sel-prov" style="margin-bottom:8px;"><option value="">-- Pilih Provinsi --</option></select>
+          <select id="sel-kab" style="margin-bottom:8px;" disabled><option value="">-- Pilih Kota/Kabupaten --</option></select>
+          <select id="sel-kec" style="margin-bottom:8px;" disabled><option value="">-- Pilih Kecamatan --</option></select>
+          <select id="sel-kel" style="margin-bottom:8px;" disabled><option value="">-- Pilih Kelurahan/Desa --</option></select>
+
           <label style="margin-top:15px;">Atau Pilih Maskot:</label>
           <div id="setup-mascot-grid" class="mascot-grid"></div>
       </div>
@@ -405,9 +413,15 @@
       <button id="btn-open-edit" style="background:#fff; padding:12px 16px; font-size:16px; border-radius:999px; box-shadow: var(--shadow-soft); border:2px solid #EEF0FB;">⚙️</button>
     </div>
 
-    <div class="star-banner">
-      <h3>⭐ <span id="main-menu-points">0</span></h3>
-      <p>Total Bintangmu</p>
+    <div style="display:flex; gap:12px; margin-bottom:18px;">
+      <div class="star-banner" style="flex:1; margin-bottom:0; padding:18px 10px;">
+        <h3 style="font-size:28px;">⭐ <span id="main-menu-points">0</span></h3>
+        <p>XP Peringkat</p>
+      </div>
+      <div class="star-banner" style="flex:1; margin-bottom:0; padding:18px 10px; background:var(--grad-mint); color:#fff; box-shadow:0 12px 28px rgba(43,184,218,.35);">
+        <h3 style="font-size:28px;">🪙 <span id="main-menu-coins">0</span></h3>
+        <p>Koin Hadiah</p>
+      </div>
     </div>
 
     <h3 style="font-size:15px; font-weight:700; margin-bottom:10px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.5px;">Materi Per Kelas:</h3>
@@ -429,6 +443,14 @@
       <div class="main-menu-card mm-mint" id="btn-menu-games">
         <div class="mm-icon anim-wobble">🎮</div>
         <h3>ZONA BERMAIN</h3>
+      </div>
+      <div class="main-menu-card" id="btn-menu-rank" style="background:linear-gradient(135deg,#FFB13D,#FF6B4A); box-shadow:0 12px 28px rgba(255,107,74,.35);">
+        <div class="mm-icon anim-pulse">🏆</div>
+        <h3>PERINGKAT</h3>
+      </div>
+      <div class="main-menu-card" id="btn-menu-reward" style="background:linear-gradient(135deg,#FF6CC2,#B06CFF); box-shadow:0 12px 28px rgba(176,108,255,.35);">
+        <div class="mm-icon anim-wobble">🎁</div>
+        <h3>TUKAR HADIAH</h3>
       </div>
       <div class="main-menu-card mm-coral" id="btn-menu-chat" style="grid-column: span 2;">
         <div class="mm-icon anim-float">💬</div>
@@ -587,6 +609,39 @@
       <div id="mini-game-content" style="flex-grow:1; width:100%; display:flex; flex-direction:column; align-items:center; margin-top: 15px;"></div>
   </div>
 
+  <!-- ================= LEADERBOARD ================= -->
+  <div id="screen-leaderboard" class="screen" style="padding-bottom: 40px;">
+      <button id="btn-back-rank" class="btn-back">← Menu Utama</button>
+      <div class="soft-card" style="background:linear-gradient(135deg,#FFB13D,#FF6B4A); color:#fff; box-shadow:0 12px 28px rgba(255,107,74,.35); padding:18px;">
+          <h2 style="font-size:24px; margin:0; font-weight:700;">🏆 PAPAN PERINGKAT</h2>
+          <p style="font-size:13px; font-weight:800; margin:4px 0 0; opacity:.95;">Seluruh Indonesia s.d. Kelurahan</p>
+      </div>
+      <div class="pill-tabs" style="flex-wrap:nowrap; overflow-x:auto;" id="rank-scope-tabs">
+          <div class="pill-tab active" data-scope="national" style="font-size:11px; padding:10px 4px;">🇮🇩 Nasional</div>
+          <div class="pill-tab" data-scope="province" style="font-size:11px; padding:10px 4px;">Provinsi</div>
+          <div class="pill-tab" data-scope="regency" style="font-size:11px; padding:10px 4px;">Kota/Kab</div>
+          <div class="pill-tab" data-scope="district" style="font-size:11px; padding:10px 4px;">Kec.</div>
+          <div class="pill-tab" data-scope="village" style="font-size:11px; padding:10px 4px;">Kel.</div>
+      </div>
+      <div class="soft-card" id="my-rank-card" style="flex-direction:row; justify-content:space-between; padding:16px 20px; text-align:left;">
+          <div style="font-weight:900; font-size:14px; color:var(--ink-soft);">Peringkatmu:</div>
+          <div style="font-weight:900; font-size:18px; color:var(--primary);" id="my-rank-val">-</div>
+      </div>
+      <div id="rank-list" style="display:flex; flex-direction:column; gap:10px;"></div>
+  </div>
+
+  <!-- ================= TUKAR HADIAH ================= -->
+  <div id="screen-rewards" class="screen" style="padding-bottom: 40px;">
+      <button id="btn-back-reward" class="btn-back">← Menu Utama</button>
+      <div class="soft-card" style="background:linear-gradient(135deg,#FF6CC2,#B06CFF); color:#fff; box-shadow:0 12px 28px rgba(176,108,255,.35); padding:18px;">
+          <h2 style="font-size:24px; margin:0; font-weight:700;">🎁 TUKAR HADIAH</h2>
+          <p style="font-size:13px; font-weight:800; margin:6px 0 0;">Saldo Koinmu: <span style="background:rgba(255,255,255,.9); color:#8A3AB0; border-radius:999px; padding:3px 14px;">🪙 <span id="reward-coins-val">0</span></span></p>
+      </div>
+      <div id="reward-list" style="display:flex; flex-direction:column; gap:12px;"></div>
+      <h3 style="font-size:15px; font-weight:700; margin:20px 0 10px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.5px;">Riwayat Penukaranmu:</h3>
+      <div id="redeem-history" style="display:flex; flex-direction:column; gap:8px;"></div>
+  </div>
+
   <!-- FINISH/MESSAGE MODAL -->
   <div id="custom-modal">
     <div class="soft-card" style="padding:36px 22px;">
@@ -600,22 +655,29 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-  import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-  import { getFirestore, doc, setDoc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+  import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
   // ================= KONFIGURASI (identik dengan V4.8 agar data lama tetap terpakai) =================
   const firebaseConfig = { apiKey: "AIzaSyCqq_TxdIPAM6mroR2WHfYU8yjBs_C80-A", authDomain: "buddyspeak-3b7d9.firebaseapp.com", projectId: "buddyspeak-3b7d9", storageBucket: "buddyspeak-3b7d9.firebasestorage.app", messagingSenderId: "108845140350", appId: "1:108845140350:web:c3178d5bc448a26bdc8b2f" };
   const GEMINI_API_KEY = ""; // <-- Isi API key Gemini di sini untuk fitur "Ngobrol Sama Buddy"
 
+  // SUPABASE = backend user, poin, leaderboard, reward
+  const SUPABASE_URL = "https://qzqhvfsmennqvhesfjkf.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF6cWh2ZnNtZW5ucXZoZXNmamtmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNTc5NTUsImV4cCI6MjA5OTkzMzk1NX0.Giq-7FG0nXNvXepq-Hw7Bhsq9a8p3uIVtl5SOB4gqdY";
+  const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // FIREBASE = HANYA untuk membaca materi (rules harus public-read, lihat panduan)
   const fbApp = initializeApp(firebaseConfig);
-  const auth = getAuth(fbApp);
   const db = getFirestore(fbApp);
+  let CURRENT_USER = null;
 
   // CATATAN LEVEL: nilai internal currentLevel tetap 2-7 (kompatibel dgn data cloud V4.8).
   // Tampilan ke anak = "Kelas (level - 1) SD", sehingga rentangnya Kelas 1 s.d. Kelas 6 SD.
   const toKelas = (lvl) => Math.min(6, Math.max(1, (Number(lvl) || 2) - 1));
 
-  let PROGRESS = { childName: "", currentLevel: 2, mascot: "🦊", totalPoints: 0, modulesDone: {}, photoUrl: "", domicile: "", phone: "", school: "", address: "" };
+  let PROGRESS = { childName: "", currentLevel: 2, mascot: "🦊", xp: 0, coins: 0, photoUrl: "", domicile: "", phone: "", school: "", address: "",
+                   provinceId: null, provinceName: "", regencyId: null, regencyName: "", districtId: null, districtName: "", villageId: null, villageName: "" };
   let APP_STATE = { activeModule: null, currentTopic: null, items: [], currentIndex: 0, score: 0, selectedParts: [], currentTab: 'noun' };
 
   const THEMES = ["Daily Activity", "At School", "My Family", "Pets & Nature", "Healthy Habits"];
@@ -821,7 +883,31 @@
       if(target) target.classList.add('active');
   }
 
-  async function saveProgress() { if(auth.currentUser) await setDoc(doc(db, 'artifacts', 'buddyspeak-v4', 'users', auth.currentUser.uid, 'data', 'progress'), PROGRESS); }
+  async function saveProgress() {
+      if(!CURRENT_USER) return;
+      // xp & coins SENGAJA tidak dikirim: hanya server (RPC) yang boleh mengubahnya
+      const row = {
+          id: CURRENT_USER.id, child_name: PROGRESS.childName, current_level: PROGRESS.currentLevel,
+          mascot: PROGRESS.mascot, photo_url: PROGRESS.photoUrl, domicile: PROGRESS.domicile,
+          phone: PROGRESS.phone, school: PROGRESS.school, address: PROGRESS.address,
+          province_id: PROGRESS.provinceId, province_name: PROGRESS.provinceName,
+          regency_id: PROGRESS.regencyId, regency_name: PROGRESS.regencyName,
+          district_id: PROGRESS.districtId, district_name: PROGRESS.districtName,
+          village_id: PROGRESS.villageId, village_name: PROGRESS.villageName
+      };
+      const { error } = await sb.from('profiles').upsert(row);
+      if(error) console.error('Gagal simpan profil:', error.message);
+  }
+
+  window.awardPoints = async (kind, ref, score = 0) => {
+      try {
+          const { data, error } = await sb.rpc('award_points', { p_kind: kind, p_ref: String(ref), p_score: Math.max(0, Math.round(score || 0)) });
+          if (error || !data || data.ok === false) return { xp: 0, coins: 0, msg: (data && data.msg) || (error && error.message) || '' };
+          PROGRESS.xp += (data.xp || 0);
+          PROGRESS.coins += (data.coins || 0);
+          return data;
+      } catch(e) { return { xp: 0, coins: 0, msg: 'Koneksi gagal' }; }
+  };
 
   // ================= MESIN MINI GAMES =================
   const GameEngine = {
@@ -844,13 +930,16 @@
           }, 1000);
           showScreen('screen-play-game');
       },
-      finish: function(status) {
+      finish: async function(status) {
           clearInterval(this.timerInt); clearInterval(this.spawnInt);
+          const gameKey = this.active || 'game';
           this.active = null;
-          PROGRESS.totalPoints += Math.floor(this.score/2); saveProgress();
+          let award = { xp: 0, coins: 0, msg: '' };
+          try { award = await window.awardPoints('minigame', gameKey, this.score); } catch(e) {}
           let emoji = this.lives > 0 ? "🏆" : "💔";
           if(this.lives > 0) launchConfetti();
-          let msg = status + '<br><span style="font-size:17px; font-weight:normal;">Skor Akhir: ' + this.score + '</span><br>⭐ +' + Math.floor(this.score/2) + ' Bintang';
+          let msg = status + '<br><span style="font-size:17px; font-weight:normal;">Skor Akhir: ' + this.score + '</span><br>⭐ +' + (award.xp||0) + ' XP &nbsp;&nbsp; 🪙 +' + (award.coins||0) + ' Koin'
+              + (award.msg ? '<br><span style="font-size:13px; font-weight:normal;">' + award.msg + '</span>' : '');
           window.customAlert(emoji, msg, () => {
               showScreen('screen-games-menu');
           });
@@ -1101,19 +1190,17 @@
       const oldText = btn.innerText;
       btn.innerText = "MEMERIKSA... ⏳";
       btn.disabled = true;
-      try {
-          const userCred = await signInWithEmailAndPassword(auth, e, p);
-          btn.innerText = "BERHASIL ✅";
-          checkUserProgressAndLoad(userCred.user);
-      } catch(err) {
+      const { data, error } = await sb.auth.signInWithPassword({ email: e, password: p });
+      if (error) {
           btn.innerText = oldText;
           btn.disabled = false;
-          let msg = err.message;
-          let rawCode = err.code;
-          if (err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
-              msg = "Akun belum terdaftar atau sandi salah!<br>Silakan klik tombol <b>DAFTAR BARU</b>.";
-          }
-          window.customAlert('❌', `Gagal Masuk!<br><span style="font-size:15px;">${msg}</span><br><br><span style="font-size:11px; color:#A9AECB;">Log Sistem: ${rawCode}</span>`);
+          let msg = error.message === 'Invalid login credentials'
+              ? 'Akun belum terdaftar atau sandi salah!<br>Silakan klik tombol <b>DAFTAR BARU</b>.'
+              : (error.message === 'Email not confirmed' ? 'Email belum dikonfirmasi. Cek kotak masuk email Anda.' : error.message);
+          window.customAlert('❌', `Gagal Masuk!<br><span style="font-size:15px;">${msg}</span>`);
+      } else {
+          btn.innerText = "BERHASIL ✅";
+          checkUserProgressAndLoad(data.user);
       }
   });
 
@@ -1127,9 +1214,21 @@
       const oldText = btn.innerText;
       btn.innerText = "MENDAFTAR... ⏳";
       btn.disabled = true;
-      try {
-          const userCred = await createUserWithEmailAndPassword(auth, e, p);
+      const { data, error } = await sb.auth.signUp({ email: e, password: p });
+      if (error) {
+          btn.innerText = oldText;
+          btn.disabled = false;
+          const msg = error.message.includes('already registered')
+              ? 'Email ini sudah terdaftar!<br>Silakan klik tombol <b>MASUK SEKARANG</b>.'
+              : error.message;
+          window.customAlert('❌', `Gagal Daftar!<br><span style="font-size:15px;">${msg}</span>`);
+      } else if (!data.session) {
+          btn.innerText = oldText;
+          btn.disabled = false;
+          window.customAlert('📧', 'Cek Email Anda!<br><span style="font-size:15px;">Klik link konfirmasi yang dikirim, lalu kembali dan klik MASUK.<br><br><span style="font-size:12px; color:#A9AECB;">(Untuk melewati langkah ini, matikan "Confirm email" di Supabase → Authentication → Providers)</span></span>');
+      } else {
           btn.innerText = "BERHASIL ✅";
+          CURRENT_USER = data.user;
           window.customAlert('🎉', 'Pendaftaran Sukses!<br><span style="font-size:15px;">Silakan lihat panduan aplikasi.</span>', () => {
               isAppInitialized = true;
               showScreen('screen-intro');
@@ -1141,19 +1240,11 @@
               getEl('dot-2').classList.remove('active');
               getEl('dot-3').classList.remove('active');
           });
-      } catch(err) {
-          btn.innerText = oldText;
-          btn.disabled = false;
-          let msg = err.message;
-          let rawCode = err.code;
-          if (err.code === 'auth/email-already-in-use') {
-              msg = "Email ini sudah terdaftar!<br>Silakan klik tombol <b>MASUK SEKARANG</b>.";
-          }
-          window.customAlert('❌', `Gagal Daftar!<br><span style="font-size:15px;">${msg}</span><br><br><span style="font-size:11px; color:#A9AECB;">Log Sistem: ${rawCode}</span>`);
       }
   });
 
   let isAppInitialized = false;
+  let lastLoadedUid = null;
 
   bind('btn-start-app', 'click', async () => {
       const btn = getEl('btn-start-app');
@@ -1167,18 +1258,21 @@
       }
 
       isAppInitialized = true;
-
-      if (auth.currentUser) {
-          checkUserProgressAndLoad(auth.currentUser);
+      const { data: { session } } = await sb.auth.getSession();
+      if (session) {
+          checkUserProgressAndLoad(session.user);
       } else {
           showScreen('screen-auth');
       }
   });
 
-  onAuthStateChanged(auth, (user) => {
-      if (isAppInitialized) {
-          if (user) checkUserProgressAndLoad(user);
-          else showScreen('screen-auth');
+  sb.auth.onAuthStateChange((event, session) => {
+      if (!isAppInitialized) return;
+      if (session) {
+          if (session.user.id !== lastLoadedUid) checkUserProgressAndLoad(session.user);
+      } else {
+          lastLoadedUid = null;
+          showScreen('screen-auth');
       }
   });
 
@@ -1187,12 +1281,29 @@
       const loadingText = getEl('loading-txt-display');
       if(loadingText) loadingText.innerText = "MEMERIKSA AKUN... 🔍";
 
+      CURRENT_USER = user;
+      lastLoadedUid = user.id;
+
       try {
-          const snap = await getDoc(doc(db, 'artifacts', 'buddyspeak-v4', 'users', user.uid, 'data', 'progress')).catch(()=>null);
-          if (snap && snap.exists() && snap.data().childName) {
-              PROGRESS = Object.assign(PROGRESS, snap.data());
-              if(Number(PROGRESS.currentLevel) < 2) PROGRESS.currentLevel = 2; // data lama level 1 (TK) dinaikkan ke Kelas 1 SD
-              fetchCloudDataAndGoToDashboard(user);
+          const { data: row, error } = await sb.from('profiles').select('*').eq('id', user.id).maybeSingle();
+          if (error) throw error;
+
+          if (row && row.child_name) {
+              PROGRESS.childName = row.child_name;
+              PROGRESS.currentLevel = Math.max(2, Number(row.current_level) || 2);
+              PROGRESS.mascot = row.mascot || '🦊';
+              PROGRESS.photoUrl = row.photo_url || '';
+              PROGRESS.domicile = row.domicile || '';
+              PROGRESS.phone = row.phone || '';
+              PROGRESS.school = row.school || '';
+              PROGRESS.address = row.address || '';
+              PROGRESS.provinceId = row.province_id; PROGRESS.provinceName = row.province_name || '';
+              PROGRESS.regencyId = row.regency_id; PROGRESS.regencyName = row.regency_name || '';
+              PROGRESS.districtId = row.district_id; PROGRESS.districtName = row.district_name || '';
+              PROGRESS.villageId = row.village_id; PROGRESS.villageName = row.village_name || '';
+              PROGRESS.xp = Number(row.xp) || 0;
+              PROGRESS.coins = Number(row.coins) || 0;
+              fetchCloudDataAndGoToDashboard();
           } else {
               showScreen('screen-intro');
               currentIntro = 1;
@@ -1280,6 +1391,8 @@
       if(PROGRESS.school) getEl('setup-school').value = PROGRESS.school;
       if(PROGRESS.address) getEl('setup-address').value = PROGRESS.address;
 
+      initWilayahUI();
+
       if(PROGRESS.photoUrl) {
           getEl('setup-mascot-preview').innerHTML = `<img src="${PROGRESS.photoUrl}" style="width:100%; height:100%; object-fit:cover;">`;
       } else {
@@ -1305,8 +1418,13 @@
           PROGRESS.school = getEl('setup-school').value;
           PROGRESS.address = getEl('setup-address').value;
 
+          if(!PROGRESS.villageId) {
+              // Lokasi belum diisi: profil tetap tersimpan, tapi tidak muncul di peringkat wilayah
+              console.warn('Lokasi kelurahan belum diatur.');
+          }
+
           await saveProgress();
-          fetchCloudDataAndGoToDashboard(auth.currentUser);
+          fetchCloudDataAndGoToDashboard();
       });
   }
 
@@ -1344,7 +1462,8 @@
   // ================= MENU UTAMA =================
   function renderMainMenu() {
       getEl('main-menu-name').innerText = `HAI, ${(PROGRESS.childName || 'TEMAN').toUpperCase()}!`;
-      getEl('main-menu-points').innerText = PROGRESS.totalPoints;
+      getEl('main-menu-points').innerText = PROGRESS.xp;
+      getEl('main-menu-coins').innerText = PROGRESS.coins;
 
       if (PROGRESS.photoUrl) {
           getEl('main-mascot-box').innerHTML = `<img src="${PROGRESS.photoUrl}" style="width:100%; height:100%; object-fit:cover;">`;
@@ -1408,7 +1527,7 @@
   function renderMisiDashboard() {
       const kelas = toKelas(PROGRESS.currentLevel);
       getEl('misi-lvl-val').innerText = kelas;
-      getEl('misi-points-val').innerText = PROGRESS.totalPoints;
+      getEl('misi-points-val').innerText = PROGRESS.xp;
       getEl('misi-grade-val').innerText = `Kelas ${kelas} SD ⭐`;
       getEl('rapor-num').innerText = kelas;
       getEl('buddy-message').innerText = `Halo ${PROGRESS.childName || 'Teman'} yang hebat, ayo semangat belajar hari ini supaya kamu jadi bintang kelas ${kelas} yang paling pintar dan membanggakan! 🌟📚✨`;
@@ -2064,16 +2183,19 @@
       }
   }
 
-  window.nextItem = () => {
+  window.nextItem = async () => {
       APP_STATE.currentIndex++;
       if(APP_STATE.currentIndex >= APP_STATE.items.length) {
           const progEl = getEl('module-progress');
           if(progEl) progEl.style.width = '100%';
 
-          PROGRESS.totalPoints += 50; saveProgress();
+          const missionRef = APP_STATE.activeModule + '|' + (APP_STATE.currentTopic || '-') + '|' + PROGRESS.currentLevel + '|' + APP_STATE.currentTab;
+          let award = { xp: 0, coins: 0, msg: '' };
+          try { award = await window.awardPoints('mission', missionRef, APP_STATE.score); } catch(e) {}
           launchConfetti();
 
-          window.customAlert('🎉', 'MISI SELESAI!<br><span style="font-size:17px; font-weight:normal;">Kamu dapat +50 Bintang! ⭐</span>', () => {
+          window.customAlert('🎉', 'MISI SELESAI!<br><span style="font-size:17px; font-weight:normal;">+' + (award.xp||0) + ' XP ⭐ &nbsp; +' + (award.coins||0) + ' Koin 🪙</span>'
+              + (award.msg ? '<br><span style="font-size:13px; font-weight:normal;">' + award.msg + '</span>' : ''), () => {
               showScreen('screen-category');
           });
       } else renderGameItem();
@@ -2122,7 +2244,292 @@
       setupMascotInit();
   });
   bind('btn-back-profile', 'click', renderMainMenu);
-  bind('btn-logout', 'click', () => signOut(auth).then(()=>location.reload()));
+  bind('btn-logout', 'click', () => sb.auth.signOut().then(()=>location.reload()));
+
+  // ================= WILAYAH INDONESIA (dataset emsifa = kode Kemendagri) =================
+  const WIL_API = 'https://www.emsifa.com/api-wilayah-indonesia/api';
+  let WIL_CACHE = { provinces: null };
+
+  const fetchWil = async (path) => {
+      try { const r = await fetch(`${WIL_API}/${path}.json`); return r.ok ? await r.json() : []; }
+      catch(e) { return []; }
+  };
+  const fillSel = (el, items, placeholder) => {
+      el.innerHTML = `<option value="">${placeholder}</option>` +
+          items.map(i => `<option value="${i.id}">${i.name}</option>`).join('');
+      el.disabled = items.length === 0;
+  };
+  const normWil = (str) => (str || '').toLowerCase()
+      .replace(/kabupaten|kota adm[a-z.]*|kota|kecamatan|kelurahan|desa|city of|city|regency|district|daerah khusus ibukota|dki/g, '')
+      .replace(/[^a-z ]/g, '').replace(/\s+/g, ' ').trim();
+  const matchWil = (list, name) => {
+      const n = normWil(name);
+      if (!n) return null;
+      return list.find(i => normWil(i.name) === n)
+          || list.find(i => normWil(i.name).includes(n) || n.includes(normWil(i.name)))
+          || null;
+  };
+
+  async function initWilayahUI() {
+      const selProv = getEl('sel-prov'), selKab = getEl('sel-kab'), selKec = getEl('sel-kec'), selKel = getEl('sel-kel');
+      if (!selProv) return;
+
+      if (!WIL_CACHE.provinces) WIL_CACHE.provinces = await fetchWil('provinces');
+      fillSel(selProv, WIL_CACHE.provinces, '-- Pilih Provinsi --');
+
+      selProv.onchange = async () => {
+          const opt = selProv.selectedOptions[0];
+          PROGRESS.provinceId = selProv.value || null;
+          PROGRESS.provinceName = selProv.value ? opt.text : '';
+          PROGRESS.regencyId = PROGRESS.districtId = PROGRESS.villageId = null;
+          PROGRESS.regencyName = PROGRESS.districtName = PROGRESS.villageName = '';
+          fillSel(selKab, selProv.value ? await fetchWil('regencies/' + selProv.value) : [], '-- Pilih Kota/Kabupaten --');
+          fillSel(selKec, [], '-- Pilih Kecamatan --');
+          fillSel(selKel, [], '-- Pilih Kelurahan/Desa --');
+          getEl('btn-save-profile').disabled = false;
+      };
+      selKab.onchange = async () => {
+          const opt = selKab.selectedOptions[0];
+          PROGRESS.regencyId = selKab.value || null;
+          PROGRESS.regencyName = selKab.value ? opt.text : '';
+          PROGRESS.districtId = PROGRESS.villageId = null;
+          PROGRESS.districtName = PROGRESS.villageName = '';
+          fillSel(selKec, selKab.value ? await fetchWil('districts/' + selKab.value) : [], '-- Pilih Kecamatan --');
+          fillSel(selKel, [], '-- Pilih Kelurahan/Desa --');
+          getEl('btn-save-profile').disabled = false;
+      };
+      selKec.onchange = async () => {
+          const opt = selKec.selectedOptions[0];
+          PROGRESS.districtId = selKec.value || null;
+          PROGRESS.districtName = selKec.value ? opt.text : '';
+          PROGRESS.villageId = null; PROGRESS.villageName = '';
+          fillSel(selKel, selKec.value ? await fetchWil('villages/' + selKec.value) : [], '-- Pilih Kelurahan/Desa --');
+          getEl('btn-save-profile').disabled = false;
+      };
+      selKel.onchange = () => {
+          const opt = selKel.selectedOptions[0];
+          PROGRESS.villageId = selKel.value || null;
+          PROGRESS.villageName = selKel.value ? opt.text : '';
+          getEl('btn-save-profile').disabled = false;
+      };
+
+      // Prefill dari profil yang sudah tersimpan
+      if (PROGRESS.provinceId) {
+          selProv.value = PROGRESS.provinceId;
+          fillSel(selKab, await fetchWil('regencies/' + PROGRESS.provinceId), '-- Pilih Kota/Kabupaten --');
+          if (PROGRESS.regencyId) {
+              selKab.value = PROGRESS.regencyId;
+              fillSel(selKec, await fetchWil('districts/' + PROGRESS.regencyId), '-- Pilih Kecamatan --');
+              if (PROGRESS.districtId) {
+                  selKec.value = PROGRESS.districtId;
+                  fillSel(selKel, await fetchWil('villages/' + PROGRESS.districtId), '-- Pilih Kelurahan/Desa --');
+                  if (PROGRESS.villageId) selKel.value = PROGRESS.villageId;
+              }
+          }
+      }
+  }
+
+  bind('btn-detect-gps', 'click', () => {
+      const status = getEl('gps-status');
+      if (!navigator.geolocation) { status.innerText = '❌ Perangkat tidak mendukung GPS.'; return; }
+      status.innerText = '📡 Mencari lokasimu...';
+
+      navigator.geolocation.getCurrentPosition(async (pos) => {
+          try {
+              status.innerText = '🔍 Menerjemahkan koordinat ke alamat...';
+              const { latitude: lat, longitude: lon } = pos.coords;
+              const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&accept-language=id&zoom=18`);
+              const j = await r.json();
+              const a = j.address || {};
+
+              const provName = a.state || a.region || '';
+              const kabName  = a.city || a.county || a.regency || '';
+              const kecName  = a.city_district || a.district || a.subdistrict || a.municipality || '';
+              const kelName  = a.village || a.suburb || a.neighbourhood || a.hamlet || '';
+
+              // Cocokkan hasil GPS ke dataset resmi (kode Kemendagri) secara berjenjang
+              if (!WIL_CACHE.provinces) WIL_CACHE.provinces = await fetchWil('provinces');
+              const selProv = getEl('sel-prov'), selKab = getEl('sel-kab'), selKec = getEl('sel-kec'), selKel = getEl('sel-kel');
+
+              const mProv = matchWil(WIL_CACHE.provinces, provName);
+              if (!mProv) { status.innerText = `⚠️ Terdeteksi "${provName || 'tidak dikenal'}" tapi tidak cocok dengan daftar provinsi. Silakan pilih manual di bawah.`; return; }
+              selProv.value = mProv.id;
+              PROGRESS.provinceId = mProv.id; PROGRESS.provinceName = mProv.name;
+
+              const kabList = await fetchWil('regencies/' + mProv.id);
+              fillSel(selKab, kabList, '-- Pilih Kota/Kabupaten --');
+              const mKab = matchWil(kabList, kabName);
+              if (mKab) {
+                  selKab.value = mKab.id;
+                  PROGRESS.regencyId = mKab.id; PROGRESS.regencyName = mKab.name;
+                  const kecList = await fetchWil('districts/' + mKab.id);
+                  fillSel(selKec, kecList, '-- Pilih Kecamatan --');
+                  const mKec = matchWil(kecList, kecName);
+                  if (mKec) {
+                      selKec.value = mKec.id;
+                      PROGRESS.districtId = mKec.id; PROGRESS.districtName = mKec.name;
+                      const kelList = await fetchWil('villages/' + mKec.id);
+                      fillSel(selKel, kelList, '-- Pilih Kelurahan/Desa --');
+                      const mKel = matchWil(kelList, kelName);
+                      if (mKel) {
+                          selKel.value = mKel.id;
+                          PROGRESS.villageId = mKel.id; PROGRESS.villageName = mKel.name;
+                      }
+                  }
+              }
+
+              const found = [PROGRESS.provinceName, PROGRESS.regencyName, PROGRESS.districtName, PROGRESS.villageName].filter(Boolean).join(' → ');
+              status.innerHTML = `✅ Terdeteksi: <b>${found}</b><br>Periksa dulu, koreksi lewat pilihan di bawah jika kurang tepat, lalu SIMPAN.`;
+              getEl('btn-save-profile').disabled = false;
+          } catch(e) {
+              status.innerText = '❌ Gagal menerjemahkan lokasi. Silakan pilih manual di bawah.';
+          }
+      }, (err) => {
+          status.innerText = err.code === 1
+              ? '❌ Izin lokasi ditolak. Aktifkan izin lokasi di browser, atau pilih manual di bawah.'
+              : '❌ Gagal mendapatkan lokasi. Silakan pilih manual di bawah.';
+      }, { enableHighAccuracy: true, timeout: 12000 });
+  });
+
+  // ================= LEADERBOARD =================
+  let LB_SCOPE = 'national';
+  const scopeLabel = { national: 'Nasional', province: 'Provinsi', regency: 'Kota/Kab', district: 'Kecamatan', village: 'Kelurahan' };
+  const scopeIdOf = (scope) => scope === 'province' ? PROGRESS.provinceId
+      : scope === 'regency' ? PROGRESS.regencyId
+      : scope === 'district' ? PROGRESS.districtId
+      : scope === 'village' ? PROGRESS.villageId : null;
+
+  async function renderLeaderboard() {
+      document.querySelectorAll('#rank-scope-tabs .pill-tab').forEach(t => {
+          t.classList.toggle('active', t.dataset.scope === LB_SCOPE);
+      });
+      const list = getEl('rank-list');
+      const myRankEl = getEl('my-rank-val');
+      list.innerHTML = '<div style="text-align:center; font-weight:900; color:var(--ink-soft); padding:20px;">Memuat... ⏳</div>';
+      myRankEl.innerText = '-';
+      showScreen('screen-leaderboard');
+
+      const scopeId = scopeIdOf(LB_SCOPE);
+      if (LB_SCOPE !== 'national' && !scopeId) {
+          list.innerHTML = '<div class="soft-card" style="font-weight:800; color:var(--ink-soft); font-size:14px;">📍 Atur lokasi wilayahmu dulu di menu ⚙️ Profil untuk melihat peringkat ' + scopeLabel[LB_SCOPE] + '.</div>';
+          return;
+      }
+
+      try {
+          const [{ data: rows, error: e1 }, { data: mine }] = await Promise.all([
+              sb.rpc('get_leaderboard', { p_scope: LB_SCOPE, p_scope_id: scopeId, p_limit: 50 }),
+              sb.rpc('get_my_rank', { p_scope: LB_SCOPE, p_scope_id: scopeId })
+          ]);
+          if (e1) throw e1;
+
+          if (mine && mine.ok) myRankEl.innerText = `#${mine.rank} dari ${mine.total} (${scopeLabel[LB_SCOPE]})`;
+
+          if (!rows || rows.length === 0) {
+              list.innerHTML = '<div class="soft-card" style="font-weight:800; color:var(--ink-soft);">Belum ada peserta di wilayah ini. Jadilah yang pertama! 🚀</div>';
+              return;
+          }
+
+          const medals = ['🥇', '🥈', '🥉'];
+          list.innerHTML = rows.map((r, i) => {
+              const isMe = r.child_name === PROGRESS.childName && Number(r.xp) === Number(PROGRESS.xp);
+              const wilayah = LB_SCOPE === 'national' ? (r.province_name || '')
+                  : LB_SCOPE === 'province' ? (r.regency_name || '')
+                  : LB_SCOPE === 'regency' ? (r.district_name || '')
+                  : (r.village_name || '');
+              return `
+              <div class="module-item" style="${isMe ? 'border-color:var(--primary); background:#F5F4FF;' : ''} cursor:default;">
+                  <div style="width:44px; text-align:center; font-weight:900; font-size:${i < 3 ? '26px' : '16px'}; color:var(--ink-soft); flex-shrink:0;">${medals[i] || '#' + r.rank}</div>
+                  <div class="module-item-icon" style="background:#F2F4FF; width:46px; height:46px; font-size:24px; margin-right:10px;">${r.mascot || '🦊'}</div>
+                  <div class="module-item-info">
+                      <h3 style="font-size:15px;">${r.child_name}${isMe ? ' (Kamu)' : ''}</h3>
+                      <p style="font-size:11.5px;">${[r.school, wilayah].filter(Boolean).join(' • ') || '-'}</p>
+                  </div>
+                  <div style="font-weight:900; color:#F5900C; font-size:15px; flex-shrink:0;">⭐ ${Number(r.xp).toLocaleString('id-ID')}</div>
+              </div>`;
+          }).join('');
+      } catch(e) {
+          list.innerHTML = '<div class="soft-card" style="font-weight:800; color:#C62838;">Gagal memuat peringkat. Periksa koneksi & konfigurasi Supabase.<br><span style="font-size:12px;">' + (e.message || '') + '</span></div>';
+      }
+  }
+
+  document.querySelectorAll('#rank-scope-tabs .pill-tab').forEach(t => {
+      t.onclick = () => { LB_SCOPE = t.dataset.scope; renderLeaderboard(); };
+  });
+
+  // ================= TUKAR HADIAH =================
+  async function renderRewards() {
+      showScreen('screen-rewards');
+      getEl('reward-coins-val').innerText = PROGRESS.coins;
+      const list = getEl('reward-list');
+      const hist = getEl('redeem-history');
+      list.innerHTML = '<div style="text-align:center; font-weight:900; color:var(--ink-soft); padding:20px;">Memuat hadiah... ⏳</div>';
+      hist.innerHTML = '';
+
+      try {
+          const { data: rewards, error } = await sb.from('rewards').select('*').eq('is_active', true).gt('stock', 0).order('coin_cost');
+          if (error) throw error;
+
+          if (!rewards || rewards.length === 0) {
+              list.innerHTML = '<div class="soft-card" style="font-weight:800; color:var(--ink-soft);">Belum ada hadiah tersedia. Nantikan ya! 🎁</div>';
+          } else {
+              list.innerHTML = '';
+              rewards.forEach(rw => {
+                  const affordable = PROGRESS.coins >= rw.coin_cost;
+                  const item = document.createElement('div');
+                  item.className = 'module-item';
+                  item.style.cursor = 'default';
+                  item.innerHTML = `
+                      <div class="module-item-icon" style="background:#FDF0FF;">${rw.emoji || '🎁'}</div>
+                      <div class="module-item-info">
+                          <h3 style="font-size:15px;">${rw.name}</h3>
+                          <p style="font-size:11.5px;">${rw.description || ''} • Stok: ${rw.stock} • ${rw.reward_type === 'fisik' ? '📦 Dikirim' : '📲 Digital'}</p>
+                      </div>
+                      <button class="btn-mic" style="background:${affordable ? 'var(--grad-grape)' : '#D5D9F2'}; min-height:44px; padding:0 12px; font-size:12px; flex-shrink:0; box-shadow:${affordable ? '0 6px 14px rgba(176,108,255,.35)' : 'none'};" ${affordable ? '' : 'disabled'}>🪙 ${rw.coin_cost}</button>`;
+
+                  const btn = item.querySelector('button');
+                  if (affordable) {
+                      let armed = false;
+                      btn.onclick = async () => {
+                          if (!armed) { armed = true; btn.innerText = 'YAKIN? ✅'; setTimeout(() => { if(armed){ armed = false; btn.innerText = '🪙 ' + rw.coin_cost; } }, 3000); return; }
+                          btn.disabled = true; btn.innerText = '⏳';
+                          const note = rw.reward_type === 'fisik'
+                              ? ('Kirim ke: ' + (PROGRESS.address || '-') + ', ' + (PROGRESS.domicile || '-') + ' | HP wali: ' + (PROGRESS.phone || '-'))
+                              : ('Kirim ke no. HP wali: ' + (PROGRESS.phone || '-'));
+                          const { data: res, error: e2 } = await sb.rpc('redeem_reward', { p_reward_id: rw.id, p_note: note });
+                          if (e2 || !res || !res.ok) {
+                              window.customAlert('😢', (res && res.msg) || 'Penukaran gagal. Coba lagi ya.');
+                              renderRewards();
+                          } else {
+                              PROGRESS.coins -= rw.coin_cost;
+                              launchConfetti();
+                              window.customAlert('🎁', res.msg + '<br><span style="font-size:14px; font-weight:normal;">' + (rw.reward_type === 'fisik' ? 'Hadiah akan dikirim ke alamat di profilmu.' : 'Hadiah digital dikirim ke no. HP wali di profilmu.') + '</span>', () => renderRewards());
+                          }
+                      };
+                  }
+                  list.appendChild(item);
+              });
+          }
+
+          const { data: reds } = await sb.from('redemptions').select('*').order('created_at', { ascending: false }).limit(10);
+          const statusMap = { pending: ['⏳ Diproses', '#8A6D00', '#FFF6D6'], processed: ['📦 Disiapkan', '#1857B0', '#DFF2FF'], shipped: ['🚚 Dikirim', '#1857B0', '#DFF2FF'], done: ['✅ Selesai', '#189A63', '#DDF6E8'], rejected: ['❌ Ditolak', '#C62838', '#FFE9EB'] };
+          hist.innerHTML = (reds && reds.length > 0)
+              ? reds.map(rd => {
+                  const st = statusMap[rd.status] || statusMap.pending;
+                  return `<div class="dict-item" style="display:flex; justify-content:space-between; align-items:center;">
+                      <div><div style="font-weight:900; font-size:14px;">${rd.reward_name}</div><div style="font-size:11px; font-weight:800; color:var(--ink-soft);">🪙 ${rd.coin_cost} • ${new Date(rd.created_at).toLocaleDateString('id-ID')}</div></div>
+                      <div style="font-weight:900; font-size:11px; color:${st[1]}; background:${st[2]}; padding:5px 10px; border-radius:999px;">${st[0]}</div>
+                  </div>`;
+              }).join('')
+              : '<div style="font-weight:800; font-size:13px; color:var(--ink-soft); text-align:center; padding:10px;">Belum ada penukaran.</div>';
+      } catch(e) {
+          list.innerHTML = '<div class="soft-card" style="font-weight:800; color:#C62838;">Gagal memuat hadiah. Periksa konfigurasi Supabase.<br><span style="font-size:12px;">' + (e.message || '') + '</span></div>';
+      }
+  }
+
+  bind('btn-menu-rank', 'click', () => { LB_SCOPE = 'national'; renderLeaderboard(); });
+  bind('btn-menu-reward', 'click', renderRewards);
+  bind('btn-back-rank', 'click', renderMainMenu);
+  bind('btn-back-reward', 'click', renderMainMenu);
 </script>
 </body>
 </html>
