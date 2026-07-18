@@ -296,12 +296,11 @@
           <div style="width:96px; height:96px; border-radius:30px; background:var(--grad-sun); box-shadow:0 8px 22px rgba(255,159,69,.35); display:flex; align-items:center; justify-content:center; margin-bottom:18px;">
               <img src="https://ik.imagekit.io/easylanguage/Easy%20Kit%20Buddy%20Speak/logo%20baru/EL%20KIDS%20(4).png" style="width:66px;" alt="Logo" onerror="this.outerHTML='<span style=&quot;font-size:48px;&quot;>🦊</span>'">
           </div>
-          <h1 class="title-large">Masuk Akun</h1>
-          <p style="font-weight:800; margin-bottom:20px; color:var(--ink-soft); font-size:14px;">Halo Ayah & Bunda, silakan masuk ke akun BuddySpeak.</p>
+          <h1 class="title-large">Masuk / Daftar</h1>
+          <p style="font-weight:800; margin-bottom:20px; color:var(--ink-soft); font-size:14px;">Halo Ayah & Bunda, masukkan email & sandi.<br>Akun baru akan dibuat otomatis. ✨</p>
           <input type="email" id="input-email" placeholder="Email Orang Tua" style="text-align: center; margin-bottom: 12px;">
-          <input type="password" id="input-password" placeholder="Kata Sandi" style="text-align: center; margin-bottom: 16px;">
+          <input type="password" id="input-password" placeholder="Kata Sandi (min. 6 karakter)" style="text-align: center; margin-bottom: 16px;">
           <button id="btn-login-exec" class="btn-primary">MASUK SEKARANG 🚀</button>
-          <button id="btn-register-exec" class="btn-secondary" style="justify-content:center;">DAFTAR BARU ✨</button>
       </div>
   </div>
 
@@ -1181,65 +1180,62 @@
       }
   });
 
+  const goToIntroAsNewUser = () => {
+      isAppInitialized = true;
+      showScreen('screen-intro');
+      currentIntro = 1;
+      getEl('intro-step-1').classList.add('active-step');
+      getEl('intro-step-2').classList.remove('active-step');
+      getEl('intro-step-3').classList.remove('active-step');
+      getEl('dot-1').classList.add('active');
+      getEl('dot-2').classList.remove('active');
+      getEl('dot-3').classList.remove('active');
+  };
+
   bind('btn-login-exec', 'click', async () => {
-      const e = getEl('input-email').value.trim();
-      const p = getEl('input-password').value;
-      if(!e || !p) { window.customAlert('⚠️', 'Data Belum Lengkap!<br><span style="font-size:15px;">Mohon isi email dan kata sandi terlebih dahulu.</span>'); return; }
-
-      const btn = getEl('btn-login-exec');
-      const oldText = btn.innerText;
-      btn.innerText = "MEMERIKSA... ⏳";
-      btn.disabled = true;
-      const { data, error } = await sb.auth.signInWithPassword({ email: e, password: p });
-      if (error) {
-          btn.innerText = oldText;
-          btn.disabled = false;
-          let msg = error.message === 'Invalid login credentials'
-              ? 'Akun belum terdaftar atau sandi salah!<br>Silakan klik tombol <b>DAFTAR BARU</b>.'
-              : (error.message === 'Email not confirmed' ? 'Email belum dikonfirmasi. Cek kotak masuk email Anda.' : error.message);
-          window.customAlert('❌', `Gagal Masuk!<br><span style="font-size:15px;">${msg}</span>`);
-      } else {
-          btn.innerText = "BERHASIL ✅";
-          checkUserProgressAndLoad(data.user);
-      }
-  });
-
-  bind('btn-register-exec', 'click', async () => {
       const e = getEl('input-email').value.trim();
       const p = getEl('input-password').value;
       if(!e || !p) { window.customAlert('⚠️', 'Data Belum Lengkap!<br><span style="font-size:15px;">Mohon isi email dan kata sandi terlebih dahulu.</span>'); return; }
       if(p.length < 6) { window.customAlert('⚠️', 'Sandi Terlalu Pendek!<br><span style="font-size:15px;">Kata sandi minimal harus 6 karakter.</span>'); return; }
 
-      const btn = getEl('btn-register-exec');
+      const btn = getEl('btn-login-exec');
       const oldText = btn.innerText;
-      btn.innerText = "MENDAFTAR... ⏳";
+      btn.innerText = "MEMERIKSA... ⏳";
       btn.disabled = true;
-      const { data, error } = await sb.auth.signUp({ email: e, password: p });
-      if (error) {
-          btn.innerText = oldText;
-          btn.disabled = false;
-          const msg = error.message.includes('already registered')
-              ? 'Email ini sudah terdaftar!<br>Silakan klik tombol <b>MASUK SEKARANG</b>.'
-              : error.message;
-          window.customAlert('❌', `Gagal Daftar!<br><span style="font-size:15px;">${msg}</span>`);
-      } else if (!data.session) {
-          btn.innerText = oldText;
-          btn.disabled = false;
-          window.customAlert('📧', 'Cek Email Anda!<br><span style="font-size:15px;">Klik link konfirmasi yang dikirim, lalu kembali dan klik MASUK.<br><br><span style="font-size:12px; color:#A9AECB;">(Untuk melewati langkah ini, matikan "Confirm email" di Supabase → Authentication → Providers)</span></span>');
-      } else {
+      const resetBtn = () => { btn.innerText = oldText; btn.disabled = false; };
+
+      // LANGKAH 1: coba masuk (untuk akun yang sudah ada)
+      const { data: signInData, error: signInErr } = await sb.auth.signInWithPassword({ email: e, password: p });
+      if (!signInErr) {
           btn.innerText = "BERHASIL ✅";
-          CURRENT_USER = data.user;
-          window.customAlert('🎉', 'Pendaftaran Sukses!<br><span style="font-size:15px;">Silakan lihat panduan aplikasi.</span>', () => {
-              isAppInitialized = true;
-              showScreen('screen-intro');
-              currentIntro = 1;
-              getEl('intro-step-1').classList.add('active-step');
-              getEl('intro-step-2').classList.remove('active-step');
-              getEl('intro-step-3').classList.remove('active-step');
-              getEl('dot-1').classList.add('active');
-              getEl('dot-2').classList.remove('active');
-              getEl('dot-3').classList.remove('active');
-          });
+          checkUserProgressAndLoad(signInData.user);
+          return;
+      }
+      if (signInErr.message === 'Email not confirmed') {
+          resetBtn();
+          window.customAlert('📧', 'Akun ini dibuat saat konfirmasi email masih aktif.<br><span style="font-size:14px;">Klik link di email Anda, atau minta admin mengonfirmasi akun ini lewat Supabase → Authentication → Users.</span>');
+          return;
+      }
+
+      // LANGKAH 2: akun belum ada -> daftarkan otomatis
+      const { data: signUpData, error: signUpErr } = await sb.auth.signUp({ email: e, password: p });
+
+      if (!signUpErr && signUpData.session) {
+          // Akun baru berhasil dibuat & langsung masuk
+          btn.innerText = "BERHASIL ✅";
+          CURRENT_USER = signUpData.user;
+          lastLoadedUid = signUpData.user.id;
+          window.customAlert('🎉', 'Akun Baru Dibuat!<br><span style="font-size:15px;">Selamat datang di BuddySpeak!</span>', goToIntroAsNewUser);
+      } else if (signUpErr && signUpErr.message.toLowerCase().includes('already registered')) {
+          // Email sudah terdaftar tapi login tadi gagal -> berarti sandinya salah
+          resetBtn();
+          window.customAlert('🔑', 'Sandi Salah!<br><span style="font-size:15px;">Email ini sudah terdaftar, tapi kata sandinya tidak cocok. Coba ingat-ingat lagi ya.</span>');
+      } else if (!signUpErr && !signUpData.session) {
+          resetBtn();
+          window.customAlert('📧', 'Cek Email Anda!<br><span style="font-size:15px;">Klik link konfirmasi yang dikirim, lalu kembali dan klik MASUK.<br><br><span style="font-size:12px; color:#A9AECB;">(Agar langsung masuk tanpa langkah ini, matikan "Confirm email" di Supabase → Authentication → Providers)</span></span>');
+      } else {
+          resetBtn();
+          window.customAlert('❌', `Gagal!<br><span style="font-size:15px;">${(signUpErr && signUpErr.message) || 'Terjadi kesalahan. Coba lagi.'}</span>`);
       }
   });
 
@@ -1305,14 +1301,7 @@
               PROGRESS.coins = Number(row.coins) || 0;
               fetchCloudDataAndGoToDashboard();
           } else {
-              showScreen('screen-intro');
-              currentIntro = 1;
-              getEl('intro-step-1').classList.add('active-step');
-              getEl('intro-step-2').classList.remove('active-step');
-              getEl('intro-step-3').classList.remove('active-step');
-              getEl('dot-1').classList.add('active');
-              getEl('dot-2').classList.remove('active');
-              getEl('dot-3').classList.remove('active');
+              goToIntroAsNewUser();
           }
       } catch (e) {
           console.error(e);
